@@ -1,4 +1,6 @@
-/* Vec2.js */
+/* Vec2.js
+ physics adapted from https://github.com/subprotocol/verlet-js
+* */
 
 function Vector2D(x, y) {
     this.x = x || 0;

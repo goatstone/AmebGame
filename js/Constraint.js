@@ -1,4 +1,6 @@
-/* Constraints.js */
+/* Constraints.js
+ physics adapted from https://github.com/subprotocol/verlet-js
+* */
 
 function DistanceConstraint(a, b, stiffness, distance /*optional*/) {
     this.a = a;  // particle
