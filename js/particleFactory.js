@@ -11,8 +11,11 @@ var particleFactory = (function () {
         this.boundWidth = 250;
         this.jitter = 1.2;
         this.gravity = new Vector2D(0, 0.1);
+        this.frameCallBack = null;
     }
-
+    Particle.prototype.setFrameCallBack = function (callBack) {
+        this.frameCallBack = callBack;
+    }
     Particle.prototype.draw = function (ctx) {
         ctx.beginPath();
         ctx.arc(this.pos.x, this.pos.y, this.size, 0, 2 * Math.PI);

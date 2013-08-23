@@ -18,8 +18,12 @@ var game = (function () {
     var headParticle = null;
     var headConstraint = null;
     var footConstraint = null;
+    var footParticle = null;
+
     var probeMode = true;
     var maxNeckLength = 90;
+    var constrainMod = false;
+    var bugFigures = [];
 
     window.addEventListener("load", function load() {
         window.removeEventListener("load", load, false);
@@ -38,45 +42,12 @@ var game = (function () {
         ctx = canvas.getContext("2d");
 
         setEvents();
-        makePegs();
         makeBugFigures();
-    }
-
-    var pegs = [];
-
-    function makePegs() {
-        pegs = [];
-        var pegsConfig = [
-            {pos: new Vector2D(10, 10), lastPos: new Vector2D(10, 10), color: "rgba(200, 0, 200, 0.05)",
-                size: 15}
-        ];
-        var i = 35;
-        while (--i) {
-            var rn = rand(70, 1000);
-            var rn2 = rand(40, 200);
-            var obj = {
-                pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
-                color: "rgba(" + rand(0, 25) + "," + rand(20, 150) + ", " + rand(220, 250) + ", 0.9)",
-                size: 15, boundWidth: width,
-                gravity: new Vector2D(0.0, 1.0)
-
-            }
-            pegsConfig.push(obj);
-        }
-        pegs = particleFactory.get(pegsConfig);
-        for (var f in pegs) {
-            constraints.push(new PinConstraint(pegs[f], pegs[f].pos));
-        }
-        particles = particles.concat(pegs);
-        //pegs = null;
     }
 
     // AmebFactory.get();
     var ameb = (function () {
 
-        var headParticle = null;
-        var footParticle = null;
-        var headConstraint = null;
         var footConstraint = null;
         var foot = null;
         var amebParticles = [];
@@ -86,6 +57,8 @@ var game = (function () {
         var incY = 50;
         var amtX = 19;
         var amtY = 20;
+        var pegHOffset = 10;
+        var pegWOffset = 10;
 
         while (--i) {
             var obj = {
@@ -99,25 +72,24 @@ var game = (function () {
         amebParticles = particleFactory.get(compConfig);
         headParticle = amebParticles[0];
         footParticle = amebParticles[1];
+
         //  DistanceConstraint
         for (var i in amebParticles) {
             if (i > 0) {
                 constraints.push(new DistanceConstraint(amebParticles[i], amebParticles[i - 1], 0.02, 30));
             }
         }
-        // PinConstraint
         headParticle.size = 10;
         headParticle.color = "rgba( 255, 90, 0, 0.9)";
         footParticle.color = "rgba( 200, 200, 0, 0.9)";
 
         headConstraint = new PinConstraint(headParticle, headParticle.pos);
-        constraints.push(headConstraint);
 
         amebParticles[1].size = 20
         footConstraint = new PinConstraint(amebParticles[1], amebParticles[1].pos);
         constraints.push(footConstraint);
         particles = particles.concat(amebParticles);
-        var maxNeckLength = 70;
+
         return {
             seStepMode: function () {
                 removeConstraint(footConstraint);
@@ -126,13 +98,29 @@ var game = (function () {
                 footConstraint = new PinConstraint(footParticle, footParticle.pos);
                 constraints.push(footConstraint);
             },
+            addHeadConstraint: function () {
+                headConstraint = new PinConstraint(headParticle, headParticle.pos);
+                constraints.push(headConstraint);
+            },
             moveHead: function (config) {
                 if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
                     < maxNeckLength) {
+                    headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
                     headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
                 }
             },
             frame: function () {
+                var offset = 10;
+                for (var p in bugFigures) {
+                    if ((headConstraint.pos.y > bugFigures[p].pos.y - offset) &&
+                        (headConstraint.pos.y < bugFigures[p].pos.y + offset) &&
+                        (headConstraint.pos.x > bugFigures[p].pos.x - offset) &&
+                        (headConstraint.pos.x < bugFigures[p].pos.x + offset)) {
+                        bugFigures.splice(p, 1);
+                        break;
+                    }
+                }
+
             },
             draw: function () {
             }
@@ -140,15 +128,14 @@ var game = (function () {
     })();
 
     function makeBugFigures() {
-        var bugFigures = [];
         var bugFigConfig = [];
-        var j = 9;
+        var j = 19;
         while (--j) {
             var rn = rand(0, 200);
             var rn2 = rand(0, 100);
             var obj = {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
-                color: "rgba(255," + rand(20, 50) + ", " + rand(20, 50) + ", 0.7)",
+                color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
                 size: 5, boundWidth: width,
                 gravity: new Vector2D(0.0, -0.1)
                 //jitter: 1
@@ -156,7 +143,6 @@ var game = (function () {
             bugFigConfig.push(obj);
         }
         bugFigures = particleFactory.get(bugFigConfig);
-        particles = particles.concat(bugFigures);
     }
 
     function setEvents() {
@@ -179,6 +165,18 @@ var game = (function () {
             mouse.y = e.clientY - rect.top;
         };
         addEventListener("keydown", function (e) {
+            if (e.which === 67) {
+                if (constrainMod) {
+                    removeConstraint(headConstraint);
+                    constrainMod = false;
+                } else {
+                    var curDist = footParticle.pos.dist(headParticle.pos);
+                    maxNeckLength = ( curDist > 100 ) ? curDist : 100;
+                    ameb.addHeadConstraint();
+                    constrainMod = true;
+                }
+            }
+
             if (e.which === 32) {
                 if (probeMode) {
                     ameb.seStepMode();
@@ -241,6 +239,10 @@ var game = (function () {
     return {
         draw: function () {
             ctx.clearRect(0, 0, width, height);
+
+            for (var b in bugFigures) {
+                bugFigures[b].draw(ctx);
+            }
             for (var i = 0; i < particles.length; i++) {
                 particles[i].draw(ctx);
             }
@@ -257,6 +259,11 @@ var game = (function () {
             }
         },
         frame: function (step) {
+            ameb.frame();
+            for (var b in bugFigures) {
+                bugFigures[b].frame();
+            }
+
             for (var i in particles) {
                 particles[i].frame();
             }
