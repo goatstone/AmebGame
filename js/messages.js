@@ -11,7 +11,7 @@ var msg = function () {
             "Move Amebs' head with the arrow keys and catch bugs." ,
             "Lock and unlock Amebs' head with the 'c' key."  ,
             "Lock and unlock Amebs' foot with the 'space bar' key.",
-            "Press the 'r' key to restart   ."
+            "Press the \"r\" key to reset   ."
 
         ],
         labels: {"healthPoints": "Health Points: ", "bugsEaten": " | Bugs Eaten: "},
@@ -48,11 +48,17 @@ var msg = function () {
             evnt.on("tick", function () {
                 onTick();
             })
+
+            evnt.on("game.reset", function (data) {
+                selectedMsgs = [];
+            })
+
             evnt.on("ameb.tick", function (data) {
                 statusDOM.innerHTML =  msgs.labels.healthPoints + data.healthPoints + msgs.labels.bugsEaten + data.bugsEaten + "  ";
             })
             evnt.on("ameb.die", function () {
                 statusDOM.innerHTML = msgs.statusStates.die;
+                selectedMsgs = [msgs.description[6]];
             })
 
         }, draw: function (ctx) {

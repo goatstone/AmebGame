@@ -2,8 +2,7 @@
 
 var ameb = (function () {
 
-    var constrainMod = false, probeMode = true;
-
+    var constrainMod = false;
     var headParticle = null, footParticle = null,
         headConstraint = null, footConstraint = null;
 
@@ -17,40 +16,61 @@ var ameb = (function () {
     var bugFigures = [];
     var width = 300, height = 500;
 
-    var healthPoints = 20;
+    var healthPoints = 5;
     var bugsEaten = 0;
     var evnt = null;
     var ticks = 0;
     var isAlive = true;
+    var midX = 10;
+    var midY = 10;
 
     function onTick() {
         if (ticks % 3 === 0) {
             healthPoints--;
         }
-        if(healthPoints <=0 ){
+        if (healthPoints <= 0) {
             die();
         }
-        if(isAlive){
-            evnt.trigger("ameb.tick", {"healthPoints":healthPoints, "bugsEaten": bugsEaten});
+        if (isAlive) {
+            evnt.trigger("ameb.tick", {"healthPoints": healthPoints, "bugsEaten": bugsEaten});
             ticks++;
         }
     }
-     function die(){
-         removeConstraint(footConstraint);
-         removeConstraint(headConstraint);
-         isAlive = false;
-         evnt.remove("ameb.tick") ;
-         // set message
-         evnt.trigger("ameb.die");
-     }
+
+    function die() {
+        // set state TODO
+        removeConstraint(footConstraint);
+        removeConstraint(headConstraint);
+        isAlive = false;
+        // change color TODO
+
+//        evnt.remove("ameb.tick");
+        // set message
+        evnt.trigger("ameb.die");
+    }
+
     return {
+        reset: function () {
+            if (isAlive) {
+                return;
+            }
+            isAlive = true;
+            healthPoints = 5;
+            headParticle.pos = new Vector2D(midX, midY);
+            headParticle.lastPos = new Vector2D(midX, midY);
+            footParticle.pos = new Vector2D(midX, midY + 5);
+            footParticle.lastPos = new Vector2D(midX, midY + 5);
+
+            footConstraint = new PinConstraint(footParticle, footParticle.pos);
+            amebConstraints.push(footConstraint);
+        },
         init: function (config) {
 
             bugFigures = config.bugFigures;
             width = config.width;
             height = config.height;
-            var midX = width / 2;
-            var midY = height / 2;
+            midX = width / 2;
+            midY = height / 2;
             incY = midY - 10;
             var sizeStart = 16, sizeInc = 1;
             var r = 200, g = 200, b = 80;
@@ -109,14 +129,8 @@ var ameb = (function () {
             healthPoints--;
         },
         footConstraintToggle: function () {
-            if (probeMode) {
-                removeConstraint(footConstraint);
-            } else {
-                footConstraint = new PinConstraint(footParticle, footParticle.pos);
-                amebConstraints.push(footConstraint);
+            footConstraintToggle()
 
-            }
-            probeMode = (probeMode === true) ? false : true;
 
         },
         headConstraintToggle: function () {
@@ -136,7 +150,7 @@ var ameb = (function () {
         },
         moveHead: function (config) {
             if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
-                < maxNeckLength) {
+                < maxNeckLength && isAlive) {
                 headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
                 headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
             }
@@ -171,11 +185,25 @@ var ameb = (function () {
 
         }
     }
+    function footConstraintToggle() {
+        if (hasConstriaint(footConstraint)) {  // TODO if hasConstrint(footConstraint)
+            removeConstraint(footConstraint);
+        } else {
+            footConstraint = new PinConstraint(footParticle, footParticle.pos);
+            amebConstraints.push(footConstraint);
+
+        }
+    }
+
     function removeConstraint(constraint) {
         var indexOf = amebConstraints.indexOf(constraint);
         if (indexOf != -1) {
             amebConstraints.splice(indexOf, 1);
         }
+    }
+    function hasConstriaint(constraint) {
+        var indexOf = amebConstraints.indexOf(constraint);
+        return (indexOf !== -1) ? true : false;
     }
 })();
 

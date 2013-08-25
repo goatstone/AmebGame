@@ -68,9 +68,20 @@ var game = (function () {
         bugFigures = particleFactory.get(bugFigConfig);
     }
 
+    function reset() {
+        l("reset")
+//        init();
+        ameb.reset();
+        evnt.trigger("game.reset");
+
+    }
+
     function setEvents() {
         addEventListener("keydown", function (e) {
 //            l(e.which);
+            if (e.which === 82) {     // r
+                reset();
+            }
             if (e.which === 73) {     // i
                 msg.toggleIntro();
             }
@@ -89,13 +100,16 @@ var game = (function () {
             }
         });
     }
-      var ticks = 0;
+
+    var ticks = 0;
     var tickInc = 1000;
-    function onTick(){
+
+    function onTick() {
         lastTickTime = Date.now();
         evnt.trigger("tick");  // game.tick
         ticks++;
     }
+
     return {
         draw: function () {
             ctx.clearRect(0, 0, width, height);
@@ -108,7 +122,7 @@ var game = (function () {
             }
         },
         frame: function (step) {
-            if(lastTickTime < Date.now() - tickInc ){
+            if (lastTickTime < Date.now() - tickInc) {
                 onTick();
             }
             ameb.frame(step);
