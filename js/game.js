@@ -12,6 +12,11 @@ var game = (function () {
     var gravity = new Vector2D(0, 0.1);
     var bugFigures = [];
     var moveDist = 5;
+    var startTime = Date.now();
+    var lastTickTime = startTime;
+
+    var evnt = G.EvntFactory.get();
+
     var moves = {
         37: [-moveDist, 0], 38: [ 0, -moveDist],
         39: [moveDist, 0], 40: [0, moveDist]
@@ -24,8 +29,15 @@ var game = (function () {
 
     function init() {
         canvas = document.getElementById("board");
-        width = parseInt(canvas.offsetWidth);
-        height = parseInt(canvas.offsetHeight);
+        var body = document.getElementsByTagName("body")[0];
+        var viewportHeight = document.documentElement.clientHeight;
+        var viewportWidth = document.documentElement.clientWidth;
+        canvas.style.backgroundColor = "#cff";
+        body.style.backgroundColor = "#000";
+        body.style.margin = "2px";
+
+        width = viewportWidth - 15;
+        height = viewportHeight - 15;
 
         var dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
@@ -35,15 +47,15 @@ var game = (function () {
 
         setEvents();
         makeBugFigures(); // FoodFactory.get()
-        ameb.init({"bugFigures": bugFigures}); // width, height
+        ameb.init({"bugFigures": bugFigures, "width": width, "height": height}); // width, height
     }
 
     function makeBugFigures() {
         var bugFigConfig = [];
         var j = 19;
         while (--j) {
-            var rn = rand(0, 200);
-            var rn2 = rand(0, 100);
+            var rn = rand(0, width);
+            var rn2 = rand(0, height);
             var obj = {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
                 color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
@@ -58,6 +70,13 @@ var game = (function () {
 
     function setEvents() {
         addEventListener("keydown", function (e) {
+//            l(e.which);
+            if (e.which === 73) {     // i
+                msg.toggleIntro();
+            }
+            if (e.which === 191) {     // ?
+                msg.toggleDescription();
+            }
             if (e.which === 67) {     // c
                 ameb.headConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
             }
@@ -70,9 +89,13 @@ var game = (function () {
             }
         });
     }
-
-
-
+      var ticks = 0;
+    var tickInc = 1000;
+    function onTick(){
+        lastTickTime = Date.now();
+        evnt.trigger("tick");  // game.tick
+        ticks++;
+    }
     return {
         draw: function () {
             ctx.clearRect(0, 0, width, height);
@@ -80,8 +103,14 @@ var game = (function () {
             for (var b in bugFigures) {
                 bugFigures[b].draw(ctx);
             }
+            if (msg.hasMessages()) {
+                msg.draw(ctx);
+            }
         },
         frame: function (step) {
+            if(lastTickTime < Date.now() - tickInc ){
+                onTick();
+            }
             ameb.frame(step);
             for (var b in bugFigures) {
                 bugFigures[b].frame();
@@ -99,7 +128,10 @@ window.addEventListener("load", function load1() {
             }, 50);
         };
         loop();
+        msg.init();
+        msg.toggleIntro();
     }
+
 );
 
 window.requestAnimFrame = window.requestAnimationFrame

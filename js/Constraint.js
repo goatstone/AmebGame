@@ -19,7 +19,9 @@ DistanceConstraint.prototype.draw = function (ctx) {
     ctx.beginPath();
     ctx.moveTo(this.a.pos.x, this.a.pos.y);
     ctx.lineTo(this.b.pos.x, this.b.pos.y);
-    ctx.strokeStyle = "#d8dde2";
+//    ctc.
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#aa0";
     ctx.stroke();
 }
 
