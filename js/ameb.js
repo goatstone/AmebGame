@@ -16,7 +16,7 @@ var ameb = (function () {
     var bugFigures = [];
     var width = 300, height = 500;
 
-    var healthPoints = 5;
+    var healthPoints = 150;
     var bugsEaten = 0;
     var evnt = null;
     var ticks = 0;
@@ -162,7 +162,12 @@ var ameb = (function () {
                     (headConstraint.pos.y < bugFigures[p].pos.y + offset) &&
                     (headConstraint.pos.x > bugFigures[p].pos.x - offset) &&
                     (headConstraint.pos.x < bugFigures[p].pos.x + offset)) {
-                    bugFigures.splice(p, 1);
+//                    bugFigures.splice(p, 1);
+                    bugsEaten++;
+                    healthPoints = healthPoints + 2;
+                    var randX = rand(0, width)
+                    bugFigures[p].pos = new Vector2D(randX, midY);
+                    bugFigures[p].lastPos = new Vector2D(randX, midY);
                 }
             }
             for (var i in amebParticles) {
@@ -185,6 +190,10 @@ var ameb = (function () {
 
         }
     }
+    function calcHealtPoints() {
+        healthPoints = healthPoints + bugsEaten * 2;
+    }
+
     function footConstraintToggle() {
         if (hasConstriaint(footConstraint)) {  // TODO if hasConstrint(footConstraint)
             removeConstraint(footConstraint);
@@ -201,6 +210,7 @@ var ameb = (function () {
             amebConstraints.splice(indexOf, 1);
         }
     }
+
     function hasConstriaint(constraint) {
         var indexOf = amebConstraints.indexOf(constraint);
         return (indexOf !== -1) ? true : false;

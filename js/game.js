@@ -60,7 +60,7 @@ var game = (function () {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
                 color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
                 size: 5, boundWidth: width,
-                gravity: new Vector2D(0.0, -0.1)
+                gravity: new Vector2D(0.0, -0.01)
                 //jitter: 1
             }
             bugFigConfig.push(obj);
@@ -70,10 +70,8 @@ var game = (function () {
 
     function reset() {
         l("reset")
-//        init();
         ameb.reset();
         evnt.trigger("game.reset");
-
     }
 
     function setEvents() {
