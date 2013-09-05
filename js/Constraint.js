@@ -60,25 +60,6 @@ DistanceConstraint.prototype.draw = function (ctx) {
     ctx.closePath()
     ctx.fill();
 
-//    ctx.beginPath();
-//    ctx.font = "14pt Arial";
-//    ctx.fillStyle = "rgba(0, 0, 200 , 1)";
-//    ctx.fillText("0", this.cornerPoints[0].x, this.cornerPoints[0].y);
-//    ctx.fillText("1", this.cornerPoints[1].x, this.cornerPoints[1].y);
-//    ctx.fillText("2", this.cornerPoints[2].x, this.cornerPoints[2].y);
-//    ctx.fillText("3", this.cornerPoints[3].x, this.cornerPoints[3].y);
-//    ctx.closePath()
-//    ctx.fill();
-
-    var cornerSize = 1;
-    ctx.beginPath();
-//    ctx.fillStyle = "rgba(200,  0, 0 , .5)";
-//    ctx.arc(this.cornerPoints[0].x, this.cornerPoints[0].y, cornerSize,  0, 2 * Math.PI) ;
-//    ctx.arc(this.cornerPoints[1].x, this.cornerPoints[1].y, cornerSize,  0, 2 * Math.PI) ;
-//    ctx.arc(this.cornerPoints[2].x, this.cornerPoints[2].y, cornerSize,  0, 2 * Math.PI) ;
-//    ctx.arc(this.cornerPoints[3].x, this.cornerPoints[3].y, cornerSize,  0, 2 * Math.PI) ;
-    ctx.closePath()
-    ctx.fill()
 }
 
 function PinConstraint(a, pos) {
@@ -94,3 +75,23 @@ PinConstraint.prototype.draw = function (ctx) {
     ctx.fillStyle = "rgba(0,153,255,0.1)";
     ctx.fill();
 }
+
+//    ctx.beginPath();
+//    ctx.font = "14pt Arial";
+//    ctx.fillStyle = "rgba(0, 0, 200 , 1)";
+//    ctx.fillText("0", this.cornerPoints[0].x, this.cornerPoints[0].y);
+//    ctx.fillText("1", this.cornerPoints[1].x, this.cornerPoints[1].y);
+//    ctx.fillText("2", this.cornerPoints[2].x, this.cornerPoints[2].y);
+//    ctx.fillText("3", this.cornerPoints[3].x, this.cornerPoints[3].y);
+//    ctx.closePath()
+//    ctx.fill();
+
+//    var cornerSize = 1;
+//    ctx.beginPath();
+//    ctx.fillStyle = "rgba(200,  0, 0 , .5)";
+//    ctx.arc(this.cornerPoints[0].x, this.cornerPoints[0].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[1].x, this.cornerPoints[1].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[2].x, this.cornerPoints[2].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[3].x, this.cornerPoints[3].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.closePath()
+//    ctx.fill()
