@@ -13,7 +13,7 @@ var ameb = (function () {
     var incX = 0, incY = 20;
     var amtX = 19, amtY = 20;
 
-    var bugFigures = [];
+//    var bugFigures = [];
     var width = 300, height = 500;
 
     var healthPoints = 150;
@@ -66,11 +66,11 @@ var ameb = (function () {
         },
         init: function (config) {
 
-            bugFigures = config.bugFigures;
+//            bugFigures = config.bugFigures;
             width = config.width;
             height = config.height;
             midX = width / 2;
-            midY = height / 2;
+            midY =  90;
             incY = midY - 10;
             var sizeStart = 16, sizeInc = 1;
             var r = 200, g = 200, b = 80;
@@ -119,6 +119,12 @@ var ameb = (function () {
             amebConstraints.push(footConstraint);
 
         },
+        getPaticles: function () {
+            return amebParticles;
+        },
+        getConstraints: function(){
+          return  amebConstraints.slice(0,7);
+        },
         getHealthPoints: function () {
             return healthPoints;
         },
@@ -157,19 +163,19 @@ var ameb = (function () {
         },
         frame: function (step) {
             var offset = 10;
-            for (var p in bugFigures) {
-                if ((headConstraint.pos.y > bugFigures[p].pos.y - offset) &&
-                    (headConstraint.pos.y < bugFigures[p].pos.y + offset) &&
-                    (headConstraint.pos.x > bugFigures[p].pos.x - offset) &&
-                    (headConstraint.pos.x < bugFigures[p].pos.x + offset)) {
-//                    bugFigures.splice(p, 1);
-                    bugsEaten++;
-                    healthPoints = healthPoints + 2;
-                    var randX = rand(0, width)
-                    bugFigures[p].pos = new Vector2D(randX, midY);
-                    bugFigures[p].lastPos = new Vector2D(randX, midY);
-                }
-            }
+//            for (var p in bugFigures) {
+//                // is the bug about to hit a body?
+//                if ((headConstraint.pos.y > bugFigures[p].pos.y - offset) &&
+//                    (headConstraint.pos.y < bugFigures[p].pos.y + offset) &&
+//                    (headConstraint.pos.x > bugFigures[p].pos.x - offset) &&
+//                    (headConstraint.pos.x < bugFigures[p].pos.x + offset)) {
+//                    bugsEaten++;
+//                    healthPoints = healthPoints + 2;
+//                    var randX = rand(0, width)
+//                    bugFigures[p].pos = new Vector2D(randX, midY);
+//                    bugFigures[p].lastPos = new Vector2D(randX, midY);
+//                }
+//            }
             for (var i in amebParticles) {
                 amebParticles[i].frame();
             }

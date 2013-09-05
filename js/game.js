@@ -52,7 +52,7 @@ var game = (function () {
 
     function makeBugFigures() {
         var bugFigConfig = [];
-        var j = 19;
+        var j = 33;
         while (--j) {
             var rn = rand(0, width);
             var rn2 = rand(0, height);
@@ -60,7 +60,11 @@ var game = (function () {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
                 color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
                 size: 5, boundWidth: width,
-                gravity: new Vector2D(0.0, -0.01)
+                gravity: new Vector2D(0.03, 0.00),
+                checkCollision: function () {
+                    //l("collision")
+
+                }
                 //jitter: 1
             }
             bugFigConfig.push(obj);
@@ -108,9 +112,41 @@ var game = (function () {
         ticks++;
     }
 
+//    function bugCollision(possibleNextPos) {
+    function bugCollision(bugFig) {
+
+        // what is the nextPos?
+        var possibleNextPos = bugFig.getNextPos();
+        ctx.beginPath(); // draw nextPos
+        ctx.arc(possibleNextPos.x, possibleNextPos.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "#f00";
+        ctx.fill();
+
+        var parts = ameb.getPaticles();
+        var isHit = false;
+        for (var i in parts) {
+            var distR = Math.sqrt(Math.pow(possibleNextPos.x - parts[i].pos.x, 2) + Math.pow(possibleNextPos.y - parts[i].pos.y, 2))
+            if (distR < parts[i].size) {
+                isHit = true;
+                break;
+            }
+        }
+        var partCnstrnts = ameb.getConstraints();
+
+        for (var j in partCnstrnts) {
+
+        }
+
+        return isHit;
+    }
+
     return {
         draw: function () {
-            ctx.clearRect(0, 0, width, height);
+//            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "rgba(255,255,254, 0.9  )";
+            ctx.rect(0, 0, width, height);
+            ctx.fill();
+
             ameb.draw(ctx);
             for (var b in bugFigures) {
                 bugFigures[b].draw(ctx);
@@ -123,9 +159,22 @@ var game = (function () {
             if (lastTickTime < Date.now() - tickInc) {
                 onTick();
             }
+
             ameb.frame(step);
+
             for (var b in bugFigures) {
                 bugFigures[b].frame();
+
+                // what is the nextPos? does the nextPos collide?
+                var bg = bugCollision(bugFigures[b]);
+                // if yes react
+                if (bg) {  // if it is a hit then swap dirs
+                    bugFigures[b].color = "#00f";
+                    bugFigures[b].size = 6;
+                    var bounceInc = 2;
+                    bugFigures[b].lastPos.x = bugFigures[b].lastPos.x + (bugFigures[b].pos.x - bugFigures[b].lastPos.x ) * bounceInc;
+                    bugFigures[b].lastPos.y = bugFigures[b].lastPos.y + (bugFigures[b].pos.y - bugFigures[b].lastPos.y ) * bounceInc;
+                }
             }
         } };
 })();
@@ -137,11 +186,11 @@ window.addEventListener("load", function load1() {
             game.draw();
             setTimeout(function () {
                 requestAnimFrame(loop);
-            }, 50);
+            }, 200);
         };
         loop();
-        msg.init();
-        msg.toggleIntro();
+        //  msg.init();
+        // msg.toggleIntro();
     }
 
 );
