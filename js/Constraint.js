@@ -21,7 +21,7 @@ DistanceConstraint.prototype.relax = function (stepCoef) {
 }
 
 DistanceConstraint.prototype.setCornerPoints = function () {
-    rad = 5;
+    rad = 7;
     this.cornerPoints = [
         {x: 100, y: 100}
     ]
@@ -34,28 +34,11 @@ DistanceConstraint.prototype.setCornerPoints = function () {
     var yDiff = (  this.a.pos.y - newY  );
 
     this.cornerPoints = [
-        {x: this.a.pos.x - yDiff, y: this.a.pos.y + xDiff},
-        {x: this.a.pos.x + yDiff, y: this.a.pos.y - xDiff},
         {x: this.b.pos.x - yDiff, y: this.b.pos.y + xDiff},
-        {x: this.b.pos.x + yDiff, y: this.b.pos.y - xDiff}
+        {x: this.b.pos.x + yDiff, y: this.b.pos.y - xDiff},
+        {x: this.a.pos.x - yDiff, y: this.a.pos.y + xDiff},
+        {x: this.a.pos.x + yDiff, y: this.a.pos.y - xDiff}
     ];
-
-    /*
-     var rmCos = (  pB.x - pA.x   ) / Math.sqrt(Math.pow(pA.x - pB.x, 2) + Math.pow(pA.y - pB.y, 2));    // cos
-     var rmSin = (  pB.y - pA.y   ) / Math.sqrt(Math.pow(pA.x - pB.x, 2) + Math.pow(pA.y - pB.y, 2));    // sin
-
-     var newX = pA.x + rad * (rmCos  );
-     var newY = pA.y + rad * (rmSin   );
-     var xDiff = (  pA.x - newX  );
-     var yDiff = (  pA.y - newY  );
-
-     cornerPoints = [
-     {x: pA.x - yDiff, y: pA.y + xDiff},
-     {x: pA.x + yDiff, y: pA.y - xDiff},
-     {x: pB.x - yDiff, y: pB.y + xDiff},
-     {x: pB.x + yDiff, y: pB.y - xDiff}
-     ];
-     */
 }
 
 DistanceConstraint.prototype.draw = function (ctx) {
@@ -69,11 +52,32 @@ DistanceConstraint.prototype.draw = function (ctx) {
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.fillStyle = "rgba(250,25,24, 1.0)";
-    for (var i in this.cornerPoints) {
-        ctx.rect(this.cornerPoints[i].x, this.cornerPoints[i].y, 5, 5);
-    }
-    ctx.stroke();
+    ctx.fillStyle = "rgba(0, 0, 250 , .2)";
+    ctx.moveTo(this.cornerPoints[0].x, this.cornerPoints[0].y);
+    ctx.lineTo(this.cornerPoints[1].x, this.cornerPoints[1].y);
+    ctx.lineTo(this.cornerPoints[3].x, this.cornerPoints[3].y);
+    ctx.lineTo(this.cornerPoints[2].x, this.cornerPoints[2].y);
+    ctx.closePath()
+    ctx.fill();
+
+//    ctx.beginPath();
+//    ctx.font = "14pt Arial";
+//    ctx.fillStyle = "rgba(0, 0, 200 , 1)";
+//    ctx.fillText("0", this.cornerPoints[0].x, this.cornerPoints[0].y);
+//    ctx.fillText("1", this.cornerPoints[1].x, this.cornerPoints[1].y);
+//    ctx.fillText("2", this.cornerPoints[2].x, this.cornerPoints[2].y);
+//    ctx.fillText("3", this.cornerPoints[3].x, this.cornerPoints[3].y);
+//    ctx.closePath()
+//    ctx.fill();
+
+    var cornerSize = 1;
+    ctx.beginPath();
+//    ctx.fillStyle = "rgba(200,  0, 0 , .5)";
+//    ctx.arc(this.cornerPoints[0].x, this.cornerPoints[0].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[1].x, this.cornerPoints[1].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[2].x, this.cornerPoints[2].y, cornerSize,  0, 2 * Math.PI) ;
+//    ctx.arc(this.cornerPoints[3].x, this.cornerPoints[3].y, cornerSize,  0, 2 * Math.PI) ;
+    ctx.closePath()
     ctx.fill()
 }
 

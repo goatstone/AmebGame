@@ -13,7 +13,6 @@ var ameb = (function () {
     var incX = 0, incY = 20;
     var amtX = 19, amtY = 20;
 
-//    var bugFigures = [];
     var width = 300, height = 500;
 
     var healthPoints = 150;
@@ -43,7 +42,6 @@ var ameb = (function () {
         removeConstraint(headConstraint);
         isAlive = false;
         // change color TODO
-
 //        evnt.remove("ameb.tick");
         // set message
         evnt.trigger("ameb.die");
@@ -65,14 +63,12 @@ var ameb = (function () {
             amebConstraints.push(footConstraint);
         },
         init: function (config) {
-
-//            bugFigures = config.bugFigures;
             width = config.width;
             height = config.height;
             midX = width / 2;
             midY =  90;
-            incY = midY - 10;
-            var sizeStart = 16, sizeInc = 1;
+            incY = midY - 19;
+            var sizeStart = 15, sizeInc = 1;
             var r = 200, g = 200, b = 80;
             var colorInc = 10;
             var startColor = "rgba(" + r + "," + g + "," + b + ",1.0 )";
@@ -136,8 +132,6 @@ var ameb = (function () {
         },
         footConstraintToggle: function () {
             footConstraintToggle()
-
-
         },
         headConstraintToggle: function () {
             if (constrainMod) {
@@ -148,7 +142,6 @@ var ameb = (function () {
                 ameb.addHeadConstraint();
             }
             constrainMod = (constrainMod === true) ? false : true;
-
         },
         addHeadConstraint: function () {
             headConstraint = new PinConstraint(headParticle, headParticle.pos);
@@ -163,19 +156,6 @@ var ameb = (function () {
         },
         frame: function (step) {
             var offset = 10;
-//            for (var p in bugFigures) {
-//                // is the bug about to hit a body?
-//                if ((headConstraint.pos.y > bugFigures[p].pos.y - offset) &&
-//                    (headConstraint.pos.y < bugFigures[p].pos.y + offset) &&
-//                    (headConstraint.pos.x > bugFigures[p].pos.x - offset) &&
-//                    (headConstraint.pos.x < bugFigures[p].pos.x + offset)) {
-//                    bugsEaten++;
-//                    healthPoints = healthPoints + 2;
-//                    var randX = rand(0, width)
-//                    bugFigures[p].pos = new Vector2D(randX, midY);
-//                    bugFigures[p].lastPos = new Vector2D(randX, midY);
-//                }
-//            }
             for (var i in amebParticles) {
                 amebParticles[i].frame();
             }
@@ -201,7 +181,7 @@ var ameb = (function () {
     }
 
     function footConstraintToggle() {
-        if (hasConstriaint(footConstraint)) {  // TODO if hasConstrint(footConstraint)
+        if (hasConstriaint(footConstraint)) {
             removeConstraint(footConstraint);
         } else {
             footConstraint = new PinConstraint(footParticle, footParticle.pos);

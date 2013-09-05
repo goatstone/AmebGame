@@ -14,6 +14,7 @@ var game = (function () {
     var moveDist = 5;
     var startTime = Date.now();
     var lastTickTime = startTime;
+    var count = 0;
 
     var evnt = G.EvntFactory.get();
 
@@ -52,7 +53,7 @@ var game = (function () {
 
     function makeBugFigures() {
         var bugFigConfig = [];
-        var j = 33;
+        var j = 20;
         while (--j) {
             var rn = rand(0, width);
             var rn2 = rand(0, height);
@@ -60,12 +61,7 @@ var game = (function () {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
                 color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
                 size: 5, boundWidth: width,
-                gravity: new Vector2D(0.03, 0.00),
-                checkCollision: function () {
-                    //l("collision")
-
-                }
-                //jitter: 1
+                gravity: new Vector2D(0.03, 0.00)
             }
             bugFigConfig.push(obj);
         }
@@ -112,15 +108,10 @@ var game = (function () {
         ticks++;
     }
 
-//    function bugCollision(possibleNextPos) {
     function bugCollision(bugFig) {
 
         // what is the nextPos?
         var possibleNextPos = bugFig.getNextPos();
-        ctx.beginPath(); // draw nextPos
-        ctx.arc(possibleNextPos.x, possibleNextPos.y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = "#f00";
-        ctx.fill();
 
         var parts = ameb.getPaticles();
         var isHit = false;
@@ -132,11 +123,18 @@ var game = (function () {
             }
         }
         var partCnstrnts = ameb.getConstraints();
-
         for (var j in partCnstrnts) {
-
+            // check for polygon TODO !!!
+            if (
+                possibleNextPos.x < partCnstrnts[j].cornerPoints[0].x
+                    || possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x
+                    || possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y
+                    || possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y
+                ) {
+            } else {
+                isHit = true;
+            }
         }
-
         return isHit;
     }
 
@@ -165,10 +163,8 @@ var game = (function () {
             for (var b in bugFigures) {
                 bugFigures[b].frame();
 
-                // what is the nextPos? does the nextPos collide?
-                var bg = bugCollision(bugFigures[b]);
-                // if yes react
-                if (bg) {  // if it is a hit then swap dirs
+                // collision? if yes resolve
+                if (bugCollision(bugFigures[b])) {  // if it is a hit then swap dirs
                     bugFigures[b].color = "#00f";
                     bugFigures[b].size = 6;
                     var bounceInc = 2;
@@ -186,9 +182,9 @@ window.addEventListener("load", function load1() {
             game.draw();
             setTimeout(function () {
                 requestAnimFrame(loop);
-            }, 200);
+            }, 100);
         };
-        loop();
+        loop()
         //  msg.init();
         // msg.toggleIntro();
     }
@@ -204,3 +200,21 @@ window.requestAnimFrame = window.requestAnimationFrame
     window.setTimeout(callback, 1000 / 60);
 };
 
+//                var str = " - " +
+//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[0].x) + " : " +
+//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x) + " : " +
+//                    (possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y)
+//                    + " : " + (possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y)
+//                }
+
+//                if (count % 30 === 0) {
+//                var str = j+ " - " +
+//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[0].x) + " : " +
+//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x) + " : " +
+//                    (possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y) + " : " +
+//                    (possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y)
+//                console.log(str);
+//                console.log((possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x));
+//                console.log(j + ": " + partCnstrnts[j].cornerPoints[0].x + " : " + ": " + partCnstrnts[j].cornerPoints[1].x + ": " + partCnstrnts[j].cornerPoints[2].x
+//                    + ": " + partCnstrnts[j].cornerPoints[3].x)
+//                console.log(" a hit!!!")
