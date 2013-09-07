@@ -115,7 +115,7 @@ var ameb = (function () {
             amebConstraints.push(footConstraint);
 
         },
-        getPaticles: function () {
+        getParticles: function () {
             return amebParticles;
         },
         getConstraints: function(){

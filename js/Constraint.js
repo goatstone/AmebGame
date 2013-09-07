@@ -21,24 +21,24 @@ DistanceConstraint.prototype.relax = function (stepCoef) {
 }
 
 DistanceConstraint.prototype.setCornerPoints = function () {
-    rad = 7;
-//    this.cornerPoints = [
-//        {x: 100, y: 100}
-//    ]
-    var rmCos = (  this.b.pos.x - this.a.pos.x   ) / Math.sqrt(Math.pow(this.a.pos.x - this.b.pos.x, 2) + Math.pow(this.a.pos.y - this.b.pos.y, 2));    // cos
-    var rmSin = (  this.b.pos.y - this.a.pos.y   ) / Math.sqrt(Math.pow(this.a.pos.x - this.b.pos.x, 2) + Math.pow(this.a.pos.y - this.b.pos.y, 2));    // sin
+    rad = 10;
+    var rmCos = (  this.b.pos.x - this.a.pos.x   ) /
+        Math.sqrt(Math.pow(this.a.pos.x - this.b.pos.x, 2) + Math.pow(this.a.pos.y - this.b.pos.y, 2));    // cos
+    var rmSin = (  this.b.pos.y - this.a.pos.y   ) /
+        Math.sqrt(Math.pow(this.a.pos.x - this.b.pos.x, 2) + Math.pow(this.a.pos.y - this.b.pos.y, 2));    // sin
 
     var newX = this.a.pos.x + rad * (rmCos  );
     var newY = this.a.pos.y + rad * (rmSin   );
     var xDiff = (  this.a.pos.x - newX  );
     var yDiff = (  this.a.pos.y - newY  );
 
-    this.cornerPoints = [
-        {x: this.b.pos.x - yDiff, y: this.b.pos.y + xDiff},
-        {x: this.b.pos.x + yDiff, y: this.b.pos.y - xDiff},
-        {x: this.a.pos.x - yDiff, y: this.a.pos.y + xDiff},
-        {x: this.a.pos.x + yDiff, y: this.a.pos.y - xDiff}
-    ];
+    // p1, p2. p3, p4
+    this.cornerPoints = {
+        p1: {x: this.b.pos.x - yDiff, y: this.b.pos.y + xDiff},
+        p2: {x: this.b.pos.x + yDiff, y: this.b.pos.y - xDiff},
+        p3: {x: this.a.pos.x + yDiff, y: this.a.pos.y - xDiff},
+        p4: {x: this.a.pos.x - yDiff, y: this.a.pos.y + xDiff}
+    };
 }
 
 DistanceConstraint.prototype.draw = function (ctx) {
@@ -53,10 +53,15 @@ DistanceConstraint.prototype.draw = function (ctx) {
 
     ctx.beginPath();
     ctx.fillStyle = "rgba(0, 0, 250 , .2)";
-    ctx.moveTo(this.cornerPoints[0].x, this.cornerPoints[0].y);
-    ctx.lineTo(this.cornerPoints[1].x, this.cornerPoints[1].y);
-    ctx.lineTo(this.cornerPoints[3].x, this.cornerPoints[3].y);
-    ctx.lineTo(this.cornerPoints[2].x, this.cornerPoints[2].y);
+//    ctx.moveTo(this.cornerPoints[0].x, this.cornerPoints[0].y);
+//    ctx.lineTo(this.cornerPoints[1].x, this.cornerPoints[1].y);
+//    ctx.lineTo(this.cornerPoints[3].x, this.cornerPoints[3].y);
+//    ctx.lineTo(this.cornerPoints[2].x, this.cornerPoints[2].y);
+
+//    ctx.moveTo(this.cornerPoints["p1"].x, this.cornerPoints["p1"].y);
+    for (var i in this.cornerPoints) {
+        ctx.lineTo(this.cornerPoints[i].x, this.cornerPoints[i].y);
+    }
     ctx.closePath()
     ctx.fill();
 

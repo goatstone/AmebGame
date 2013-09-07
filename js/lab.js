@@ -1,26 +1,10 @@
 /* Minkowsky Sum Collision Detection */
 
- /*
-point p1(x1, y1);
-point p2(x2, y2);
-point p3(x3, y3);
-
-point p(x,y); // <-- You are checking if this point lies in the triangle.
-Now, the barycentric coordinates, generally called alpha, beta, and gamma, are calculated as follows:
-
-    float alpha = ((p2.y - p3.y)*(p.x - p3.x) + (p3.x - p2.x)*(p.y - p3.y)) /
-    ((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
-float beta = ((p3.y - p1.y)*(p.x - p3.x) + (p1.x - p3.x)*(p.y - p3.y)) /
-    ((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
-float gamma = 1.0f - alpha - beta;
-If all of alpha, beta, and gamma are greater than 0, then the point p lies within the triangle made of points p1, p2, and p3.
-
-    The explanation behind this is that a point inside a triangle can be described using the points of the triangle, and three coefficients (one for each point, in the range [0,1]):
-
-p = (alpha)*p1 + (beta)*p2 + (gamma)*p3
-
-*/
-
+var t = {
+    p1: {x: 200, y: 10},
+    p2: {x: 50, y: 300},
+    p3: {x: 350, y: 300}
+}
 // Shape s
 var s = {
     p1: {x: 250, y: 100},
@@ -38,18 +22,40 @@ var msg = "Herman Minkowsky";
 var canvas, ctx;
 var width, height;
 
+function checkTriangleCollision() {
+    // t, dot
+    var alpha = ((t.p2.y - t.p3.y) * (dot.x - t.p3.x) + (t.p3.x - t.p2.x) * (dot.y - t.p3.y)) /
+        ((t.p2.y - t.p3.y) * (t.p1.x - t.p3.x) + (t.p3.x - t.p2.x) * (t.p1.y - t.p3.y));
+
+    var beta = ((t.p3.y - t.p1.y) * (dot.x - t.p3.x) + (t.p1.x - t.p3.x) * (dot.y - t.p3.y)) /
+        ((t.p2.y - t.p3.y) * (t.p1.x - t.p3.x) + (t.p3.x - t.p2.x) * (t.p1.y - t.p3.y));
+
+    var gamma = 1.0 - alpha - beta;
+
+    if (alpha > 0 && beta > 0 && gamma > 0) {
+        msg = "inside";
+    }else{
+        msg = "outside";
+    }
+}
+
 function init() {
     setCanvas();
     setEvents();
     var loop = function () {
         tick();
-        requestAnimFrame(loop);
+//        setTimeout(
+//            function () {
+                requestAnimFrame(loop);
+//            }, 100
+//        )
     };
     loop();
 }
 
 function tick() {
-    detectCollisions();
+    //detectCollisions();
+    checkTriangleCollision();
     draw(ctx);
 }
 
@@ -150,6 +156,13 @@ function draw(ctx) {
     ctx.fillStyle = "rgba(0,0, 0, 1)";
     for (var i in ms) {
         ctx.rect(ms[i].x, ms[i].y, 5, 5);
+    }
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(0,0, 200, 1)";
+    for (var i in t) {
+        ctx.rect(t[i].x, t[i].y, 15, 15);
     }
     ctx.fill();
 

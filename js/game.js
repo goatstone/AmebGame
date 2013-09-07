@@ -53,7 +53,7 @@ var game = (function () {
 
     function makeBugFigures() {
         var bugFigConfig = [];
-        var j = 20;
+        var j = 200;
         while (--j) {
             var rn = rand(0, width);
             var rn2 = rand(0, height);
@@ -109,13 +109,33 @@ var game = (function () {
         ticks++;
     }
 
+    function checkTriangleCollision(t, dot) {
+        // t, dot
+        var msg = "c"
+        var alpha = ((t.p2.y - t.p3.y) * (dot.x - t.p3.x) + (t.p3.x - t.p2.x) * (dot.y - t.p3.y)) /
+            ((t.p2.y - t.p3.y) * (t.p1.x - t.p3.x) + (t.p3.x - t.p2.x) * (t.p1.y - t.p3.y));
+
+        var beta = ((t.p3.y - t.p1.y) * (dot.x - t.p3.x) + (t.p1.x - t.p3.x) * (dot.y - t.p3.y)) /
+            ((t.p2.y - t.p3.y) * (t.p1.x - t.p3.x) + (t.p3.x - t.p2.x) * (t.p1.y - t.p3.y));
+
+        var gamma = 1.0 - alpha - beta;
+
+        if (alpha > 0 && beta > 0 && gamma > 0) {
+            msg = true
+        } else {
+            msg = false;
+        }
+        return msg
+    }
+
     function bugCollision(bugFig) {
 
         // what is the nextPos?
         var possibleNextPos = bugFig.getNextPos();
 
-        var parts = ameb.getPaticles();
+        var parts = ameb.getParticles();
         var isHit = false;
+
         for (var i in parts) {
             var distR = Math.sqrt(Math.pow(possibleNextPos.x - parts[i].pos.x, 2) + Math.pow(possibleNextPos.y - parts[i].pos.y, 2))
             if (distR < parts[i].size) {
@@ -123,17 +143,31 @@ var game = (function () {
                 break;
             }
         }
+
         var partCnstrnts = ameb.getConstraints();
         for (var j in partCnstrnts) {
-            // check for polygon TODO !!!
-            if (
-                possibleNextPos.x < partCnstrnts[j].cornerPoints[0].x
-                    || possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x
-                    || possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y
-                    || possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y
-                ) {
-            } else {
+
+            var t = {}
+            t.p1 = partCnstrnts[j].cornerPoints["p1"];
+            t.p2 = partCnstrnts[j].cornerPoints["p3"];
+            t.p3 = partCnstrnts[j].cornerPoints["p4"];
+
+            var t2 = {}
+            t2.p1 = partCnstrnts[j].cornerPoints["p1"];
+            t2.p2 = partCnstrnts[j].cornerPoints["p2"];
+            t2.p3 = partCnstrnts[j].cornerPoints["p3"];
+
+            var isCollide = checkTriangleCollision(t, bugFig.pos) || checkTriangleCollision(t2, bugFig.pos)
+
+            if (isCollide) {
+//                console.log(isCollide);
+//                console.log(j);
                 isHit = true;
+
+            }
+
+            if (count % 10 === 0) {
+//                console.log(isCollide);
             }
         }
         return isHit;
@@ -173,6 +207,7 @@ var game = (function () {
                     bugFigures[b].lastPos.y = bugFigures[b].lastPos.y + (bugFigures[b].pos.y - bugFigures[b].lastPos.y ) * bounceInc;
                 }
             }
+            count++;
         } };
 })();
 
@@ -181,6 +216,7 @@ window.addEventListener("load", function load1() {
         var loop = function () {
             game.frame(16);
             game.draw();
+
             setTimeout(function () {
                 requestAnimFrame(loop);
             }, 100);
