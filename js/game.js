@@ -60,7 +60,8 @@ var game = (function () {
             var obj = {
                 pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
                 color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
-                size: 5, boundWidth: width,
+                size: 5,
+                boundWidth: width, boundHeight: height,
                 gravity: new Vector2D(0.03, 0.00)
             }
             bugFigConfig.push(obj);
