@@ -109,9 +109,9 @@ var game = (function () {
         ticks++;
     }
 
+    // bool checkTriangleCollision( Triangle  t, Point dot )
     function checkTriangleCollision(t, dot) {
-        // t, dot
-        var msg = "c"
+
         var alpha = ((t.p2.y - t.p3.y) * (dot.x - t.p3.x) + (t.p3.x - t.p2.x) * (dot.y - t.p3.y)) /
             ((t.p2.y - t.p3.y) * (t.p1.x - t.p3.x) + (t.p3.x - t.p2.x) * (t.p1.y - t.p3.y));
 
@@ -120,12 +120,7 @@ var game = (function () {
 
         var gamma = 1.0 - alpha - beta;
 
-        if (alpha > 0 && beta > 0 && gamma > 0) {
-            msg = true
-        } else {
-            msg = false;
-        }
-        return msg
+        return (alpha > 0 && beta > 0 && gamma > 0);
     }
 
     function bugCollision(bugFig) {
@@ -222,8 +217,8 @@ window.addEventListener("load", function load1() {
             }, 100);
         };
         loop()
-        //  msg.init();
-        // msg.toggleIntro();
+        msg.init();
+        msg.toggleIntro();
     }
 
 );
