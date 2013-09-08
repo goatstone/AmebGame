@@ -121,8 +121,14 @@ var ameb = (function () {
         getConstraints: function(){
           return  amebConstraints.slice(0,7);
         },
+        addHealthPoints: function () {
+            healthPoints++;
+        },
         getHealthPoints: function () {
             return healthPoints;
+        },
+        addBugsEaten: function () {
+             bugsEaten++;
         },
         getBugsEaten: function () {
             return bugsEaten;

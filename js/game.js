@@ -134,6 +134,14 @@ var game = (function () {
         for (var i in parts) {
             var distR = Math.sqrt(Math.pow(possibleNextPos.x - parts[i].pos.x, 2) + Math.pow(possibleNextPos.y - parts[i].pos.y, 2))
             if (distR < parts[i].size) {
+                if(i === "0"){
+                    ameb.addHealthPoints() //healthPoints++;
+                    var be = ameb.addBugsEaten();
+                    bugFig.pos = new Vector2D(Math.random*30,10);
+                    bugFig.lastPos = new Vector2D(10,10);
+                    isHit = false;
+                    break;
+                }
                 isHit = true;
                 break;
             }
