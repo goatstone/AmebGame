@@ -1,5 +1,6 @@
 /* message.js */
 
+// TODO Message Msging Msg
 var msg = function () {
     var msgs = {
         title: ["Ameb"],

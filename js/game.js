@@ -18,10 +18,16 @@ var game = (function () {
         gravity = new Vector2D(0, 0.1);
         startTime = Date.now();
         lastTickTime = startTime;
-        evnt.on("game.reset", reset)
-        setDOM()
+
+        evnt.on("game.reset", reset);
+
+        setDOM();
+
         makeBugFigures(); // FoodFactory.get()
-        ameb.init({"bugFigures": bugFigures, "width": width, "height": height}); // width, height
+
+        // grubs = grubFactory.get(1, {size:5})
+        ameb.init({ "width": width, "height": height}); // width, height
+
         loop()
     }
 
@@ -53,6 +59,7 @@ var game = (function () {
 
     }
 
+    // TODO smallGrub SmallGrup grub
     function makeBugFigures() {
         var bugFigConfig = [];
         var j = 200;
@@ -130,6 +137,7 @@ var game = (function () {
             ctx.fill();
 
             ameb.draw(ctx);
+
             for (var b in bugFigures) {
                 bugFigures[b].draw(ctx);
             }

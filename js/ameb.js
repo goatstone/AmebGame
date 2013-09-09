@@ -1,5 +1,6 @@
 /* ameb.js */
 
+// G.ameb =
 var ameb = (function () {
 
     var constrainMod = false;
