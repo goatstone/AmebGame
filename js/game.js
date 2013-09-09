@@ -17,16 +17,8 @@ var game = (function () {
     var count = 0;
 
     var evnt = G.EvntFactory.get();
-
-    var moves = {
-        37: [-moveDist, 0], 38: [ 0, -moveDist],
-        39: [moveDist, 0], 40: [0, moveDist]
-    };
-
-    window.addEventListener("load", function load() {
-        window.removeEventListener("load", load, false);
-        init();
-    });
+    var ticks = 0;
+    var tickInc = 1000;
 
     function init() {
         canvas = document.getElementById("board");
@@ -46,7 +38,8 @@ var game = (function () {
         canvas.getContext("2d").scale(dpr, dpr);
         ctx = canvas.getContext("2d");
 
-        setEvents();
+        evnt.on("game.reset", reset)
+
         makeBugFigures(); // FoodFactory.get()
         ameb.init({"bugFigures": bugFigures, "width": width, "height": height}); // width, height
     }
@@ -72,36 +65,7 @@ var game = (function () {
     function reset() {
         l("reset")
         ameb.reset();
-        evnt.trigger("game.reset");
     }
-
-    function setEvents() {
-        addEventListener("keydown", function (e) {
-//            l(e.which);
-            if (e.which === 82) {     // r
-                reset();
-            }
-            if (e.which === 73) {     // i
-                msg.toggleIntro();
-            }
-            if (e.which === 191) {     // ?
-                msg.toggleDescription();
-            }
-            if (e.which === 67) {     // c
-                ameb.headConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
-            }
-            if (e.which === 32) {    // [space bar]
-                ameb.footConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
-            }
-            if (e.which >= 37 && e.which <= 40) {
-                var moveKey = e.which;
-                ameb.moveHead(moves[moveKey]);  // evt.trigger("ameb.moveHead", {move:moves[moveKey]} )
-            }
-        });
-    }
-
-    var ticks = 0;
-    var tickInc = 1000;
 
     function onTick() {
         lastTickTime = Date.now();
@@ -129,54 +93,43 @@ var game = (function () {
         var possibleNextPos = bugFig.getNextPos();
 
         var parts = ameb.getParticles();
-        var isHit = false;
-
         for (var i in parts) {
             var distR = Math.sqrt(Math.pow(possibleNextPos.x - parts[i].pos.x, 2) + Math.pow(possibleNextPos.y - parts[i].pos.y, 2))
             if (distR < parts[i].size) {
-                if(i === "0"){
+                if (i === "0") {
+                    // ameb.eatBug()
+                    // evt.trigger.("ameb.eatBug")
                     ameb.addHealthPoints() //healthPoints++;
                     var be = ameb.addBugsEaten();
-                    bugFig.pos = new Vector2D(Math.random*30,10);
-                    bugFig.lastPos = new Vector2D(10,10);
+                    bugFig.pos = new Vector2D(Math.random * 30, 10);
+                    bugFig.lastPos = new Vector2D(10, 10);
                     isHit = false;
                     break;
                 }
-                isHit = true;
-                break;
+                return true
             }
         }
 
         var partCnstrnts = ameb.getConstraints();
         for (var j in partCnstrnts) {
-
             var t = {}
             t.p1 = partCnstrnts[j].cornerPoints["p1"];
             t.p2 = partCnstrnts[j].cornerPoints["p3"];
             t.p3 = partCnstrnts[j].cornerPoints["p4"];
-
             var t2 = {}
             t2.p1 = partCnstrnts[j].cornerPoints["p1"];
             t2.p2 = partCnstrnts[j].cornerPoints["p2"];
             t2.p3 = partCnstrnts[j].cornerPoints["p3"];
-
             var isCollide = checkTriangleCollision(t, bugFig.pos) || checkTriangleCollision(t2, bugFig.pos)
-
             if (isCollide) {
-//                console.log(isCollide);
-//                console.log(j);
-                isHit = true;
-
-            }
-
-            if (count % 10 === 0) {
-//                console.log(isCollide);
+                return true
             }
         }
-        return isHit;
+        return false;
     }
 
     return {
+        init: init,
         draw: function () {
 //            ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = "rgba(255,255,254, 0.9  )";
@@ -216,6 +169,9 @@ var game = (function () {
 
 window.addEventListener("load", function load1() {
         window.removeEventListener("load", load1, false);
+
+        game.init();
+
         var loop = function () {
             game.frame(16);
             game.draw();
@@ -227,34 +183,7 @@ window.addEventListener("load", function load1() {
         loop()
         msg.init();
         msg.toggleIntro();
+        UserActions.init();
     }
 
 );
-
-window.requestAnimFrame = window.requestAnimationFrame
-    || window.webkitRequestAnimationFrame
-    || window.mozRequestAnimationFrame
-    || window.oRequestAnimationFrame
-    || window.msRequestAnimationFrame
-    || function (callback) {
-    window.setTimeout(callback, 1000 / 60);
-};
-
-//                var str = " - " +
-//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[0].x) + " : " +
-//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x) + " : " +
-//                    (possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y)
-//                    + " : " + (possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y)
-//                }
-
-//                if (count % 30 === 0) {
-//                var str = j+ " - " +
-//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[0].x) + " : " +
-//                    (possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x) + " : " +
-//                    (possibleNextPos.y < partCnstrnts[j].cornerPoints[0].y) + " : " +
-//                    (possibleNextPos.y > partCnstrnts[j].cornerPoints[3].y)
-//                console.log(str);
-//                console.log((possibleNextPos.x > partCnstrnts[j].cornerPoints[1].x));
-//                console.log(j + ": " + partCnstrnts[j].cornerPoints[0].x + " : " + ": " + partCnstrnts[j].cornerPoints[1].x + ": " + partCnstrnts[j].cornerPoints[2].x
-//                    + ": " + partCnstrnts[j].cornerPoints[3].x)
-//                console.log(" a hit!!!")

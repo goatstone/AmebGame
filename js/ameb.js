@@ -15,7 +15,7 @@ var ameb = (function () {
 
     var width = 300, height = 500;
 
-    var healthPoints = 150;
+    var healthPoints = 15;
     var bugsEaten = 0;
     var evnt = null;
     var ticks = 0;
@@ -47,8 +47,26 @@ var ameb = (function () {
         evnt.trigger("ameb.die");
     }
 
+    function headConstraintToggle() {
+        if (constrainMod) {
+            removeConstraint(headConstraint);
+        } else {
+            var curDist = footParticle.pos.dist(headParticle.pos);
+            maxNeckLength = ( curDist > 100 ) ? curDist : 100;
+            ameb.addHeadConstraint();
+        }
+        constrainMod = (constrainMod === true) ? false : true;
+    }
+    function moveHead (config) {
+        if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
+            < maxNeckLength && isAlive) {
+            headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
+            headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
+        }
+    }
     return {
         reset: function () {
+//            l("a r")
             if (isAlive) {
                 return;
             }
@@ -66,7 +84,7 @@ var ameb = (function () {
             width = config.width;
             height = config.height;
             midX = width / 2;
-            midY =  90;
+            midY = 90;
             incY = midY - 19;
             var sizeStart = 15, sizeInc = 1;
             var r = 200, g = 200, b = 80;
@@ -92,8 +110,19 @@ var ameb = (function () {
             }
             evnt.on("tick", function () {
                 onTick();
+            });
+            evnt.on("ameb.headConstraintToggle", headConstraintToggle);
+            evnt.on("ameb.footConstraintToggle", footConstraintToggle);
+//            ameb.headConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
+//        ameb.footConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
 
-            })
+            evnt.on("ameb.moveHead", function(data){
+                l(data)
+                moveHead(data)
+            });
+//            ameb.moveHead(keyboardMoves[moveKey]);  // evt.trigger("ameb.moveHead", {move:moves[moveKey]} )
+
+
             amebParticles = particleFactory.get(compConfig);
             headParticle = amebParticles[0];
             footParticle = amebParticles[1];
@@ -118,8 +147,8 @@ var ameb = (function () {
         getParticles: function () {
             return amebParticles;
         },
-        getConstraints: function(){
-          return  amebConstraints.slice(0,7);
+        getConstraints: function () {
+            return  amebConstraints.slice(0, 7);
         },
         addHealthPoints: function () {
             healthPoints++;
@@ -128,7 +157,7 @@ var ameb = (function () {
             return healthPoints;
         },
         addBugsEaten: function () {
-             bugsEaten++;
+            bugsEaten++;
         },
         getBugsEaten: function () {
             return bugsEaten;
@@ -136,30 +165,30 @@ var ameb = (function () {
         reduceHealthPoints: function () {
             healthPoints--;
         },
-        footConstraintToggle: function () {
-            footConstraintToggle()
-        },
-        headConstraintToggle: function () {
-            if (constrainMod) {
-                removeConstraint(headConstraint);
-            } else {
-                var curDist = footParticle.pos.dist(headParticle.pos);
-                maxNeckLength = ( curDist > 100 ) ? curDist : 100;
-                ameb.addHeadConstraint();
-            }
-            constrainMod = (constrainMod === true) ? false : true;
-        },
+//        footConstraintToggle: function () {
+//            footConstraintToggle()
+//        },
+//        headConstraintToggle: function () {
+//            if (constrainMod) {
+//                removeConstraint(headConstraint);
+//            } else {
+//                var curDist = footParticle.pos.dist(headParticle.pos);
+//                maxNeckLength = ( curDist > 100 ) ? curDist : 100;
+//                ameb.addHeadConstraint();
+//            }
+//            constrainMod = (constrainMod === true) ? false : true;
+//        },
         addHeadConstraint: function () {
             headConstraint = new PinConstraint(headParticle, headParticle.pos);
             amebConstraints.push(headConstraint);
         },
-        moveHead: function (config) {
-            if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
-                < maxNeckLength && isAlive) {
-                headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
-                headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
-            }
-        },
+//        moveHead: function (config) {
+//            if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
+//                < maxNeckLength && isAlive) {
+//                headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
+//                headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
+//            }
+//        },
         frame: function (step) {
             var offset = 10;
             for (var i in amebParticles) {

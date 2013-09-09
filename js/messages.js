@@ -40,6 +40,22 @@ var msg = function () {
         ticks++;
     }
 
+    function toggleIntro() {
+        if (selectedMsgs !== intro) {
+            selectedMsgs = intro;
+        } else {
+            selectedMsgs = [];
+        }
+    }
+
+    function toggleDescription() {
+        if (selectedMsgs !== msgs.description) {
+            selectedMsgs = msgs.description;
+        } else {
+            selectedMsgs = [];
+        }
+    }
+
     return{
         init: function () {
             statusDOM = document.getElementById("status");
@@ -54,12 +70,23 @@ var msg = function () {
             })
 
             evnt.on("ameb.tick", function (data) {
-                statusDOM.innerHTML =  msgs.labels.healthPoints + data.healthPoints + msgs.labels.bugsEaten + data.bugsEaten + "  ";
+                statusDOM.innerHTML = msgs.labels.healthPoints + data.healthPoints + msgs.labels.bugsEaten + data.bugsEaten + "  ";
             })
             evnt.on("ameb.die", function () {
                 statusDOM.innerHTML = msgs.statusStates.die;
                 selectedMsgs = [msgs.description[6]];
             })
+            evnt.on("msg.toggleIntro", function (data) {
+                toggleIntro();
+            })
+            evnt.on("msg.toggleDescription", function (data) {
+                toggleDescription();
+            })
+//            msg.toggleIntro();
+//        }
+//        if (e.which === 191) {     // ?
+//        msg.toggleDescription();
+
 
         }, draw: function (ctx) {
             ctx.fillStyle = "#006";
@@ -80,13 +107,14 @@ var msg = function () {
         },
         hasMessages: function () {
             return (selectedMsgs.length > 0) ? true : false;
-        },
-        toggleDescription: function () {
-            if (selectedMsgs !== msgs.description) {
-                selectedMsgs = msgs.description;
-            } else {
-                selectedMsgs = [];
-            }
         }
+//        ,
+//        toggleDescription: function () {
+//            if (selectedMsgs !== msgs.description) {
+//                selectedMsgs = msgs.description;
+//            } else {
+//                selectedMsgs = [];
+//            }
+//        }
     }
 }();

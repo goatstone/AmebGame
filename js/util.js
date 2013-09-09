@@ -1,3 +1,12 @@
 function l(msg){
     console.log(msg);
 }
+
+window.requestAnimFrame = window.requestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.oRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || function (callback) {
+    window.setTimeout(callback, 1000 / 60);
+};
