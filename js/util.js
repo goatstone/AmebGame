@@ -2,6 +2,13 @@ function l(msg){
     console.log(msg);
 }
 
+function rand(low, high) {
+    var num = 0;
+    num = (Math.random() * (high - low) );
+    num = num + low;
+    return Math.floor(num);
+}
+
 window.requestAnimFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.mozRequestAnimationFrame

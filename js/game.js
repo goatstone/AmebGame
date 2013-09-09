@@ -8,7 +8,8 @@ var game = (function () {
     var evnt;
     var canvas, ctx, width, height;
     var gravity;
-    var bugFigures = [];
+    var grubs = [];
+    // var ameb; TODO
     var startTime, lastTickTime;
     var ticks = 0;
     var tickInc = 1000;
@@ -23,16 +24,15 @@ var game = (function () {
 
         setDOM();
 
-        makeBugFigures(); // FoodFactory.get()
+        grubs = GrubFactory.get({ "width": width, "height": height});
 
-        // grubs = grubFactory.get(1, {size:5})
         ameb.init({ "width": width, "height": height}); // width, height
 
         loop()
     }
 
     function loop() {
-        game.frame(16);  // TODO private???
+        game.frame(16);
         game.draw();
         setTimeout(function () {
             requestAnimFrame(loop);
@@ -59,25 +59,6 @@ var game = (function () {
 
     }
 
-    // TODO smallGrub SmallGrup grub
-    function makeBugFigures() {
-        var bugFigConfig = [];
-        var j = 200;
-        while (--j) {
-            var rn = rand(0, width);
-            var rn2 = rand(0, height);
-            var obj = {
-                pos: new Vector2D(rn, rn2), lastPos: new Vector2D(rn, rn2),
-                color: "rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
-                size: 5,
-                boundWidth: width, boundHeight: height,
-                gravity: new Vector2D(0.03, 0.00)
-            }
-            bugFigConfig.push(obj);
-        }
-        bugFigures = particleFactory.get(bugFigConfig);
-    }
-
     function reset() {
         ameb.reset();
     }
@@ -88,21 +69,21 @@ var game = (function () {
         ticks++;
     }
 
-    function bugCollision(bugFig) {
+    function grubCollision(grub) {
 
         // what is the nextPos?
-        var possibleNextPos = bugFig.getNextPos();
+        var possibleNextPos = grub.getNextPos();
 
         var parts = ameb.getParticles();
         for (var i in parts) {
             if (Collide.circlePoint(parts[i], possibleNextPos)) {
                 if (i === "0") {
-                    // ameb.eatBug()
+                    // ameb.eatBug() TODO
                     // evt.trigger.("ameb.eatBug")
                     ameb.addHealthPoints() //healthPoints++;
                     var be = ameb.addBugsEaten();
-                    bugFig.pos = new Vector2D(Math.random * 30, 10);
-                    bugFig.lastPos = new Vector2D(10, 10);
+                    grub.pos = new Vector2D(Math.random * 30, 10);
+                    grub.lastPos = new Vector2D(10, 10);
                     isHit = false;
                     break;
                 }
@@ -120,7 +101,7 @@ var game = (function () {
             t2.p1 = partCnstrnts[j].cornerPoints["p1"];
             t2.p2 = partCnstrnts[j].cornerPoints["p2"];
             t2.p3 = partCnstrnts[j].cornerPoints["p3"];
-            var isCollide = Collide.trianglePoint(t, bugFig.pos) || Collide.trianglePoint(t2, bugFig.pos)
+            var isCollide = Collide.trianglePoint(t, grub.pos) || Collide.trianglePoint(t2, grub.pos)
             if (isCollide) {
                 return true
             }
@@ -138,8 +119,8 @@ var game = (function () {
 
             ameb.draw(ctx);
 
-            for (var b in bugFigures) {
-                bugFigures[b].draw(ctx);
+            for (var i in grubs) {
+                grubs[i].draw(ctx);
             }
             if (msg.hasMessages()) {
                 msg.draw(ctx);
@@ -153,16 +134,16 @@ var game = (function () {
             ameb.frame(step);
 
             // TODO collision ameb
-            for (var b in bugFigures) {
-                bugFigures[b].frame();
+            for (var b in grubs) {
+                grubs[b].frame();
 
                 // collision? if yes resolve
-                if (bugCollision(bugFigures[b])) {  // if it is a hit then swap dirs
-                    bugFigures[b].color = "#00f";
-                    bugFigures[b].size = 6;
+                if (grubCollision(grubs[b])) {  // if it is a hit then swap dirs
+                    grubs[b].color = "#00f";
+                    grubs[b].size = 6;
                     var bounceInc = 2;
-                    bugFigures[b].lastPos.x = bugFigures[b].lastPos.x + (bugFigures[b].pos.x - bugFigures[b].lastPos.x ) * bounceInc;
-                    bugFigures[b].lastPos.y = bugFigures[b].lastPos.y + (bugFigures[b].pos.y - bugFigures[b].lastPos.y ) * bounceInc;
+                    grubs[b].lastPos.x = grubs[b].lastPos.x + (grubs[b].pos.x - grubs[b].lastPos.x ) * bounceInc;
+                    grubs[b].lastPos.y = grubs[b].lastPos.y + (grubs[b].pos.y - grubs[b].lastPos.y ) * bounceInc;
                 }
             }
         } };
