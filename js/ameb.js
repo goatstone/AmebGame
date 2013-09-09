@@ -117,7 +117,7 @@ var ameb = (function () {
 //        ameb.footConstraintToggle(); // evt.trigger("ameb.headConstraintToggle")
 
             evnt.on("ameb.moveHead", function(data){
-                l(data)
+//                l(data)
                 moveHead(data)
             });
 //            ameb.moveHead(keyboardMoves[moveKey]);  // evt.trigger("ameb.moveHead", {move:moves[moveKey]} )
