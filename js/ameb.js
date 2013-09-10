@@ -189,7 +189,7 @@ var ameb = (function () {
     }
 
     function draw(ctx) {
-        // beginPath ?? TODO
+        // beginPath optimize draw routine s?? TODO
         for (var i = 0; i < amebParticles.length; ++i) {
             amebParticles[i].draw(ctx);
         }

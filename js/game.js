@@ -123,7 +123,7 @@ var game = (function () {
             onTick();
         }
 
-        ameb.frame(step);
+        ameb.frame(step);  // evnt.trigger("game.frame", step)
 
         // TODO collision ameb
         for (var b in grubs) {
@@ -143,19 +143,19 @@ var game = (function () {
     }
 
     function draw() {
-//            ctx.clearRect(0, 0, width, height);
+//            ctx.clearRect(0, 0, width, height);   TODO drawEnviornment() OR env.on(draw, )
         ctx.fillStyle = "rgba(255,255,254, 0.9  )";
         ctx.rect(0, 0, width, height);
         ctx.fill();
-
-        ameb.draw(ctx);
+        // optimize draw routine : TODO
+        ameb.draw(ctx); // evnt.trigger("game.draw", ctx)
 
         for (var i in grubs) {
             grubs[i].draw(ctx);
         }
 
         if (Messages.hasMessages()) {
-            Messages.draw(ctx);
+            Messages.draw(ctx); // evnt.trigger("game.draw", ctx) // This 2nd one would not be needed TODO
         }
     }
 
