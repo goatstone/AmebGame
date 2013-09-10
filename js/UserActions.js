@@ -16,11 +16,11 @@ var UserActions = function () {
 //            reset();
             }
             if (e.which === 73) {     // i
-                evnt.trigger("msg.toggleIntro");
+                evnt.trigger("Messages.toggleIntro");
 //            msg.toggleIntro();
             }
             if (e.which === 191) {     // ?
-                evnt.trigger("msg.toggleDescription");
+                evnt.trigger("Messages.toggleDescription");
 //            msg.toggleDescription();
             }
             if (e.which === 67) {     // c

@@ -1,5 +1,10 @@
 /* game.js
- Ameb : User navigates creature, Ameb, to catch food
+
+ Ameb : User navigates creature, Ameb, to catch food and stay alive.
+
+ require:  Messages UserActions, GrubFactory, ParticleFactory, ameb
+ Collide, Constraint, Vector2D, EvntFactory
+
  physics adapted from https://github.com/subprotocol/verlet-js
  * */
 
@@ -13,6 +18,13 @@ var game = (function () {
     var startTime, lastTickTime;
     var ticks = 0;
     var tickInc = 1000;
+//    var parts = ameb.getParticles();
+//    var partCnstrnts = ameb.getConstraints();
+
+    window.addEventListener("load", function load1() {
+        window.removeEventListener("load", load1, false);
+        init();
+    });
 
     function init() {
         evnt = G.EvntFactory.get();
@@ -20,20 +32,22 @@ var game = (function () {
         startTime = Date.now();
         lastTickTime = startTime;
 
+        Messages.init(); // msgs = Messages.init();
+        UserActions.init();
+
         evnt.on("game.reset", reset);
 
         setDOM();
 
-        grubs = GrubFactory.get({ "width": width, "height": height});
-
-        ameb.init({ "width": width, "height": height}); // width, height
+        grubs = GrubFactory.get({ "width":width, "height":height});
+        ameb.init({ "width":width, "height":height});
 
         loop()
     }
 
     function loop() {
-        game.frame(16);
-        game.draw();
+        frame(16);
+        draw();
         setTimeout(function () {
             requestAnimFrame(loop);
         }, 100);
@@ -56,11 +70,10 @@ var game = (function () {
         canvas.height = height * dpr;
         canvas.getContext("2d").scale(dpr, dpr);
         ctx = canvas.getContext("2d");
-
     }
 
     function reset() {
-        ameb.reset();
+        evnt.trigger("ameb.reset")
     }
 
     function onTick() {
@@ -77,17 +90,13 @@ var game = (function () {
         var parts = ameb.getParticles();
         for (var i in parts) {
             if (Collide.circlePoint(parts[i], possibleNextPos)) {
-                if (i === "0") {
-                    // ameb.eatBug() TODO
-                    // evt.trigger.("ameb.eatBug")
-                    ameb.addHealthPoints() //healthPoints++;
-                    var be = ameb.addBugsEaten();
-                    grub.pos = new Vector2D(Math.random * 30, 10);
+                if (i === "0") { // if this is the head of the Ameb
+                    evnt.trigger("ameb.eatGrub");
+                    grub.pos = new Vector2D(Math.random * 30, 10); // grub.eaten
                     grub.lastPos = new Vector2D(10, 10);
-                    isHit = false;
-                    break;
+                    return false;
                 }
-                return true
+                return true;
             }
         }
 
@@ -109,53 +118,45 @@ var game = (function () {
         return false;
     }
 
-    return {
-        init: init,
-        draw: function () {
+    function frame(step) {
+        if (lastTickTime < Date.now() - tickInc) {
+            onTick();
+        }
+
+        ameb.frame(step);
+
+        // TODO collision ameb
+        for (var b in grubs) {
+            grubs[b].frame();
+
+            // collision? if yes resolve
+            if (grubCollision(grubs[b])) {  // if it is a hit then swap dirs
+                // resolve TODO
+                // evnt.trigger("grub.hit")
+                grubs[b].color = "#00f";
+                grubs[b].size = 6;
+                var bounceInc = 2;
+                grubs[b].lastPos.x = grubs[b].lastPos.x + (grubs[b].pos.x - grubs[b].lastPos.x ) * bounceInc;
+                grubs[b].lastPos.y = grubs[b].lastPos.y + (grubs[b].pos.y - grubs[b].lastPos.y ) * bounceInc;
+            }
+        }
+    }
+
+    function draw() {
 //            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "rgba(255,255,254, 0.9  )";
-            ctx.rect(0, 0, width, height);
-            ctx.fill();
+        ctx.fillStyle = "rgba(255,255,254, 0.9  )";
+        ctx.rect(0, 0, width, height);
+        ctx.fill();
 
-            ameb.draw(ctx);
+        ameb.draw(ctx);
 
-            for (var i in grubs) {
-                grubs[i].draw(ctx);
-            }
-            if (msg.hasMessages()) {
-                msg.draw(ctx);
-            }
-        },
-        frame: function (step) {
-            if (lastTickTime < Date.now() - tickInc) {
-                onTick();
-            }
+        for (var i in grubs) {
+            grubs[i].draw(ctx);
+        }
 
-            ameb.frame(step);
+        if (Messages.hasMessages()) {
+            Messages.draw(ctx);
+        }
+    }
 
-            // TODO collision ameb
-            for (var b in grubs) {
-                grubs[b].frame();
-
-                // collision? if yes resolve
-                if (grubCollision(grubs[b])) {  // if it is a hit then swap dirs
-                    grubs[b].color = "#00f";
-                    grubs[b].size = 6;
-                    var bounceInc = 2;
-                    grubs[b].lastPos.x = grubs[b].lastPos.x + (grubs[b].pos.x - grubs[b].lastPos.x ) * bounceInc;
-                    grubs[b].lastPos.y = grubs[b].lastPos.y + (grubs[b].pos.y - grubs[b].lastPos.y ) * bounceInc;
-                }
-            }
-        } };
 })();
-
-window.addEventListener("load", function load1() {
-    window.removeEventListener("load", load1, false);
-
-    msg.init();
-    UserActions.init();
-    game.init();
-
-    msg.toggleIntro();
-
-});

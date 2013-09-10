@@ -1,11 +1,10 @@
 /* message.js */
 
-// TODO Message Msging Msg
-var msg = function () {
+var Messages = function () {
     var msgs = {
-        title: ["Ameb"],
-        credit: ["- Designed and Developed by Goatstone, 2013"],
-        description: [
+        title:["Ameb"],
+        credit:["- Designed and Developed by Goatstone, 2013"],
+        description:[
             "Press the '?' key to see this description at any time.",
             "Ameb has only a head, a foot and a tail. ",
             "Ameb must eat bugs to stay alive!"  ,
@@ -15,9 +14,9 @@ var msg = function () {
             "Press the \"r\" key to reset   ."
 
         ],
-        labels: {"healthPoints": "Health Points: ", "bugsEaten": " | Bugs Eaten: "},
-        statusStates: {"die": "Amed is Dead!"},
-        keyboard: {c: "Lock or free the head", spaceBar: "Lock or free the Foot", arrowKeys: "move Ameb's head" }
+        labels:{"healthPoints":"Health Points: ", "bugsEaten":" | Bugs Eaten: "},
+        statusStates:{"die":"Amed is Dead!"},
+        keyboard:{c:"Lock or free the head", spaceBar:"Lock or free the Foot", arrowKeys:"move Ameb's head" }
     };
     var intro = [ msgs.title[0] + " " + msgs.credit[0] ];
     var selectedMsgs = [];
@@ -26,8 +25,32 @@ var msg = function () {
     var ticks = 0;
     var statusDOM = null;
 
-    function clear() {
-        selectedMsgs = [];
+    function init() {
+        statusDOM = document.getElementById("status");
+        var startTime = Date.now();
+        var endTime = startTime + 1000;
+
+        evnt.on("tick", function () {
+            onTick();
+        })
+        evnt.on("game.reset", function (data) {
+            selectedMsgs = [];
+        })
+        evnt.on("ameb.tick", function (data) {
+            statusDOM.innerHTML = msgs.labels.healthPoints + data.healthPoints + msgs.labels.bugsEaten + data.bugsEaten + "  ";
+        })
+        evnt.on("ameb.die", function () {
+            statusDOM.innerHTML = msgs.statusStates.die;
+            selectedMsgs = [msgs.description[6]];
+        })
+        evnt.on("Messages.toggleIntro", function (data) {
+            toggleIntro();
+        })
+        evnt.on("Messages.toggleDescription", function (data) {
+            toggleDescription();
+        })
+
+        toggleIntro();
     }
 
     function onTick() {
@@ -39,6 +62,10 @@ var msg = function () {
             selectedMsgs = [];
         }
         ticks++;
+    }
+
+    function clear() {
+        selectedMsgs = [];
     }
 
     function toggleIntro() {
@@ -57,65 +84,25 @@ var msg = function () {
         }
     }
 
+    function draw(ctx) {
+        ctx.fillStyle = "#006";
+        ctx.font = "14pt Arial";
+        top = 30;
+        for (var m in selectedMsgs) {
+            ctx.fillText(selectedMsgs[m], 10, top);
+            top += 25;
+        }
+        ctx.stroke();
+    }
+
     return{
-        init: function () {
-            statusDOM = document.getElementById("status");
-            var startTime = Date.now();
-            var endTime = startTime + 1000;
-            evnt.on("tick", function () {
-                onTick();
-            })
-
-            evnt.on("game.reset", function (data) {
-                selectedMsgs = [];
-            })
-
-            evnt.on("ameb.tick", function (data) {
-                statusDOM.innerHTML = msgs.labels.healthPoints + data.healthPoints + msgs.labels.bugsEaten + data.bugsEaten + "  ";
-            })
-            evnt.on("ameb.die", function () {
-                statusDOM.innerHTML = msgs.statusStates.die;
-                selectedMsgs = [msgs.description[6]];
-            })
-            evnt.on("msg.toggleIntro", function (data) {
-                toggleIntro();
-            })
-            evnt.on("msg.toggleDescription", function (data) {
-                toggleDescription();
-            })
-//            msg.toggleIntro();
-//        }
-//        if (e.which === 191) {     // ?
-//        msg.toggleDescription();
-
-
-        }, draw: function (ctx) {
-            ctx.fillStyle = "#006";
-            ctx.font = "14pt Arial";
-            top = 30;
-            for (var m in selectedMsgs) {
-                ctx.fillText(selectedMsgs[m], 10, top);
-                top += 25;
-            }
-            ctx.stroke();
+        init:function () {
+            init();
+        }, draw:function (ctx) {
+            draw(ctx);
         },
-        toggleIntro: function () {
-            if (selectedMsgs !== intro) {
-                selectedMsgs = intro;
-            } else {
-                selectedMsgs = [];
-            }
-        },
-        hasMessages: function () {
+        hasMessages:function () {
             return (selectedMsgs.length > 0) ? true : false;
         }
-//        ,
-//        toggleDescription: function () {
-//            if (selectedMsgs !== msgs.description) {
-//                selectedMsgs = msgs.description;
-//            } else {
-//                selectedMsgs = [];
-//            }
-//        }
     }
 }();
