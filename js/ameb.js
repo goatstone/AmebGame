@@ -5,7 +5,8 @@ var ameb = (function () {
 
     var headParticle = null, footParticle = null,
         headConstraint = null, footConstraint = null;
-    var amebParticles = [], amebConstraints = [];
+    // allParts allConstraints headPart headConstraint footPart footConstraint
+    var amebParticles = [], amebConstraints = []; // parts constraints
     var compConfig = [];
     var maxNeckLength = 100
     var isAlive = true;
@@ -53,11 +54,28 @@ var ameb = (function () {
         evnt.on("ameb.moveHead", function (data) {
             moveHead(data)
         });
-        evnt.on("ameb.reset", function () {
-            reset()
-        });
         evnt.on("ameb.eatGrub", function () {
             eatGrub()
+        });
+        evnt.on("game.reset", function () {
+            reset()
+        });
+        evnt.on("game.frame", function (step) {
+            frame(step);
+        });
+        evnt.on("game.draw", function (ctx) {
+            draw(ctx);
+        });
+        evnt.on("ameb.collidePoint", function (point) {
+            var bounceInc = 2;
+            if(collidePoint(point)){
+                // grub.resolveHit() TODO
+                point.color = "#f00";
+                point.size = 6;
+                point.lastPos.x = point.lastPos.x + (point.pos.x - point.lastPos.x ) * bounceInc;
+                point.lastPos.y = point.lastPos.y + (point.pos.y - point.lastPos.y ) * bounceInc;
+            }
+
         });
 
         amebParticles = particleFactory.get(compConfig); // bodyParts TODO
@@ -198,27 +216,58 @@ var ameb = (function () {
         }
     }
 
+    function collidePoint(grub) {
+
+        // what is the nextPos?
+        var possibleNextPos = grub.getNextPos();
+
+        var parts = amebParticles;
+        for (var i in parts) {
+            if (Collide.circlePoint(parts[i], possibleNextPos)) {
+                if (i === "0") { // if this is the head of the Ameb
+                    evnt.trigger("ameb.eatGrub");
+                    grub.pos = new Vector2D(Math.random * 30, 10); // grub.eaten
+                    grub.lastPos = new Vector2D(10, 10);
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        var partCnstrnts = amebConstraints.slice(0, 7); ;
+        for (var j in partCnstrnts) {
+            var t = {}
+            t.p1 = partCnstrnts[j].cornerPoints["p1"];
+            t.p2 = partCnstrnts[j].cornerPoints["p3"];
+            t.p3 = partCnstrnts[j].cornerPoints["p4"];
+            var t2 = {}
+            t2.p1 = partCnstrnts[j].cornerPoints["p1"];
+            t2.p2 = partCnstrnts[j].cornerPoints["p2"];
+            t2.p3 = partCnstrnts[j].cornerPoints["p3"];
+            var isCollide = Collide.trianglePoint(t, grub.pos) || Collide.trianglePoint(t2, grub.pos)
+            if (isCollide) {
+                return true
+            }
+        }
+        return false;
+    }
+
     return {
         init:function (config) {
             init(config);
         },
-        getParticles:function () {
-            return amebParticles;
-        },
-        getConstraints:function () {
-            return  amebConstraints.slice(0, 7); // TODO refactor
-        },
+//        ,
+//        getParticles:function () {
+//            return amebParticles;
+//        },
+//        getConstraints:function () {
+//            return  amebConstraints.slice(0, 7); // TODO refactor
+//        },
         getHealthPoints:function () {
             return healthPoints;
         },
         getBugsEaten:function () {
             return bugsEaten;
-        },
-        frame:function (step) {
-            frame(step);
-        },
-        draw:function (ctx) {
-            draw(ctx);
         }
     }
 

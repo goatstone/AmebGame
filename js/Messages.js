@@ -33,6 +33,11 @@ var Messages = function () {
         evnt.on("tick", function () {
             onTick();
         })
+        evnt.on("game.draw", function (ctx) {
+            if (hasMessages()) {
+                draw(ctx);
+            }
+        })
         evnt.on("game.reset", function (data) {
             selectedMsgs = [];
         })
@@ -95,14 +100,13 @@ var Messages = function () {
         ctx.stroke();
     }
 
+    function hasMessages() {
+        return (selectedMsgs.length > 0) ? true : false;
+    }
+
     return{
         init:function () {
             init();
-        }, draw:function (ctx) {
-            draw(ctx);
-        },
-        hasMessages:function () {
-            return (selectedMsgs.length > 0) ? true : false;
         }
     }
 }();
