@@ -70,8 +70,6 @@ var ameb = (function () {
             var bounceInc = 2;
             if(collidePoint(point)){
                 // grub.resolveHit() TODO
-                point.color = "#f00";
-                point.size = 6;
                 point.lastPos.x = point.lastPos.x + (point.pos.x - point.lastPos.x ) * bounceInc;
                 point.lastPos.y = point.lastPos.y + (point.pos.y - point.lastPos.y ) * bounceInc;
             }
@@ -124,7 +122,7 @@ var ameb = (function () {
     }
 
     function headConstraintToggle() {
-        if (hasConstriaint(headConstraint)) {
+        if (hasConstraint(headConstraint)) {
             removeConstraint(headConstraint);
         } else {
             var curDist = footParticle.pos.dist(headParticle.pos);
@@ -134,7 +132,7 @@ var ameb = (function () {
     }
 
     function footConstraintToggle() {
-        if (hasConstriaint(footConstraint)) {
+        if (hasConstraint(footConstraint)) {
             removeConstraint(footConstraint);
         } else {
             footConstraint = new PinConstraint(footParticle, footParticle.pos);
@@ -176,10 +174,6 @@ var ameb = (function () {
         amebConstraints.push(headConstraint);
     }
 
-    function calcHealtPoints() {
-        healthPoints = healthPoints + bugsEaten * 2;
-    }
-
     function removeConstraint(constraint) {
         var indexOf = amebConstraints.indexOf(constraint);
         if (indexOf != -1) {
@@ -187,13 +181,12 @@ var ameb = (function () {
         }
     }
 
-    function hasConstriaint(constraint) {
+    function hasConstraint(constraint) {
         var indexOf = amebConstraints.indexOf(constraint);
         return (indexOf !== -1) ? true : false; // treturn (indexOf !== -1) TODO
     }
 
     function frame(step) {
-        var offset = 10;
         for (var i in amebParticles) {
             amebParticles[i].frame();
         }
@@ -203,7 +196,6 @@ var ameb = (function () {
                 amebConstraints[j].relax(stepCoef);
             }
         }
-
     }
 
     function draw(ctx) {
@@ -253,21 +245,8 @@ var ameb = (function () {
     }
 
     return {
-        init:function (config) {
+        init: function (config) {
             init(config);
-        },
-//        ,
-//        getParticles:function () {
-//            return amebParticles;
-//        },
-//        getConstraints:function () {
-//            return  amebConstraints.slice(0, 7); // TODO refactor
-//        },
-        getHealthPoints:function () {
-            return healthPoints;
-        },
-        getBugsEaten:function () {
-            return bugsEaten;
         }
     }
 

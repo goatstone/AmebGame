@@ -31,7 +31,7 @@ var game = (function () {
 
         setDOM();
 
-        Messages.init(); // msgs = Messages.init();
+        Messages.init();
         UserActions.init();
         grubs = GrubFactory.get({ "width":width, "height":height});
         ameb.init({ "width":width, "height":height});
@@ -86,6 +86,7 @@ var game = (function () {
         evnt.trigger("game.frame", step)
 
         // TODO collision ameb
+
         for (var b in grubs) {
             grubs[b].frame();
             evnt.trigger("ameb.collidePoint", grubs[b]); // checkCollisionPoint ameb.checkCollidePoint
