@@ -17,6 +17,10 @@ var ameb = (function () {
     var evnt = null;
     var ticks = 0;
     var midX = 10, midY = 10;
+    var bbTick = 0
+
+    var tops = [], rights = [], bottoms = [], rights = [];
+    var bBox = {t:0, r:0, b:0, l:0}; // boundingBox
 
     function init(config) {
         width = config.width;
@@ -68,13 +72,37 @@ var ameb = (function () {
         });
         evnt.on("ameb.collidePoint", function (point) {
             var bounceInc = 2;
-            if(collidePoint(point)){
+            if (collidePoint(point)) {
                 // grub.resolveHit() TODO
                 point.lastPos.x = point.lastPos.x + (point.pos.x - point.lastPos.x ) * bounceInc;
                 point.lastPos.y = point.lastPos.y + (point.pos.y - point.lastPos.y ) * bounceInc;
             }
 
         });
+
+        evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
+//            l(grub)
+            if (
+                grub.pos.y < bBox.t ||
+                    grub.pos.x > bBox.r ||
+                    grub.pos.x < bBox.l ||
+                    grub.pos.y > bBox.b
+                ) {
+//                l("out of bounds")
+            }else{
+                grub.color = "#f00";
+                l("in  bounds")
+            }
+            if (bbTick % 3000 === 0) {
+//                l(bbTick)
+//                l(grub)
+
+//                l(bbTick +"x")
+            }
+            bbTick++;
+        });
+
+//        ameb.isInsideAmebBoundingBox
 
         amebParticles = particleFactory.get(compConfig); // bodyParts TODO
         headParticle = amebParticles[0];
@@ -107,6 +135,7 @@ var ameb = (function () {
         }
         if (isAlive) {
             evnt.trigger("ameb.tick", {"healthPoints":healthPoints, "bugsEaten":bugsEaten});
+//            l(ticks)
             ticks++;
         }
     }
@@ -187,15 +216,44 @@ var ameb = (function () {
     }
 
     function frame(step) {
+        var top = 0 , right = 0, bottom = 0, left = 0
+        var tops = [], rights = [], bottoms = [], lefts = [];
+
         for (var i in amebParticles) {
             amebParticles[i].frame();
+
+            top = Math.ceil(amebParticles[i].pos.y - amebParticles[i].size)
+            tops.push(top);
+            bottom = Math.ceil(amebParticles[i].pos.y + amebParticles[i].size)
+            bottoms.push(bottom);
+            right = Math.ceil(amebParticles[i].pos.x + amebParticles[i].size)
+            rights.push(right);
+            left = Math.ceil(amebParticles[i].pos.x - amebParticles[i].size)
+            lefts.push(left);
+
         }
+
         var stepCoef = 1 / step;
         for (var i = 0; i < step; ++i) {
             for (var j in amebConstraints) {
                 amebConstraints[j].relax(stepCoef);
+
+                if (amebConstraints[j].cornerPoints) {
+                    top = Math.ceil(Math.min(
+                        amebConstraints[j].cornerPoints.p1.y,
+                        amebConstraints[j].cornerPoints.p2.y,
+                        amebConstraints[j].cornerPoints.p3.y,
+                        amebConstraints[j].cornerPoints.p4.y)
+                    );
+                    tops.push(top);
+                }
             }
         }
+        // calculate bounding box
+        bBox.t = Math.min(Math.min.apply(null, tops))
+        bBox.r = Math.min(Math.max.apply(null, rights))
+        bBox.b = Math.min(Math.max.apply(null, bottoms))
+        bBox.l = Math.min(Math.min.apply(null, lefts))
     }
 
     function draw(ctx) {
@@ -206,6 +264,20 @@ var ameb = (function () {
         for (var i = 0; i < amebConstraints.length; ++i) {
             amebConstraints[i].draw(ctx);
         }
+
+//        boundingBox
+        ctx.beginPath();
+        ctx.lineTo(bBox.l, bBox.t);
+        ctx.lineTo(bBox.r, bBox.t);
+
+        ctx.lineTo(bBox.r, bBox.b);
+        ctx.lineTo(bBox.l, bBox.b);
+
+        ctx.lineTo(bBox.l, bBox.t);
+
+        ctx.fillStyle = "#f00";
+        ctx.stroke();
+
     }
 
     function collidePoint(grub) {
@@ -226,7 +298,8 @@ var ameb = (function () {
             }
         }
 
-        var partCnstrnts = amebConstraints.slice(0, 7); ;
+        var partCnstrnts = amebConstraints.slice(0, 7);
+        ;
         for (var j in partCnstrnts) {
             var t = {}
             t.p1 = partCnstrnts[j].cornerPoints["p1"];
@@ -245,7 +318,7 @@ var ameb = (function () {
     }
 
     return {
-        init: function (config) {
+        init:function (config) {
             init(config);
         }
     }
