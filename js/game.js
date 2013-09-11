@@ -44,9 +44,9 @@ var game = (function () {
     function loop() {
         frame(16);
         draw();
-//        setTimeout(function () {
+        setTimeout(function () {
             requestAnimFrame(loop);
-//        }, 0); // 100 = 5M
+        }, 50); // 100 = 5M
     }
 
     function setDOM() {
@@ -90,9 +90,10 @@ var game = (function () {
         for (var b in grubs) {
             grubs[b].frame();
             // Is the grub in the bounding box???
+           // if it is then it will check the collision with the object
             evnt.trigger("ameb.isInsideAmebBoundingBox", grubs[b]);
 
-            evnt.trigger("ameb.collidePoint", grubs[b]); // checkCollisionPoint ameb.checkCollidePoint
+          //  evnt.trigger("ameb.collidePoint", grubs[b]); // checkCollisionPoint ameb.checkCollidePoint
 
         }
     }

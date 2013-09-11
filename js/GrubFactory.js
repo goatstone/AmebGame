@@ -7,7 +7,7 @@ var GrubFactory = (function () {
 
     function setGrubs() {
         var bugFigConfig = [];
-        var j = 100;
+        var j = 70; // TODO make num proportional to canvas size
         while (--j) {
             var rn = rand(0, width);
             var rn2 = rand(0, height);

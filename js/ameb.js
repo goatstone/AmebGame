@@ -70,43 +70,23 @@ var ameb = (function () {
         evnt.on("game.draw", function (ctx) {
             draw(ctx);
         });
-        evnt.on("ameb.collidePoint", function (point) {
-            var bounceInc = 2;
-            if (collidePoint(point)) {
-                // grub.resolveHit() TODO
-                point.lastPos.x = point.lastPos.x + (point.pos.x - point.lastPos.x ) * bounceInc;
-                point.lastPos.y = point.lastPos.y + (point.pos.y - point.lastPos.y ) * bounceInc;
-            }
-
-        });
 
         evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
-//            l(grub)
+            var bounceInc = 2;
             if (
-                !(grub.pos.y < bBox.t ||
-                    grub.pos.x > bBox.r ||
-                    grub.pos.x < bBox.l ||
-                    grub.pos.y > bBox.b)
+                !(grub.pos.y < bBox.t || grub.pos.x > bBox.r ||
+                    grub.pos.x < bBox.l || grub.pos.y > bBox.b)
                 ) {
-                l("in bounds")
-                grub.color = "#f00";
                 // Now check for collision!!!!
-
-
+//                l(1)  ;
+                if (collidePoint(grub)) {
+                    // grub.resolveHit() TODO
+                    grub.lastPos.x = grub.lastPos.x + (grub.pos.x - grub.lastPos.x ) * bounceInc;
+                    grub.lastPos.y = grub.lastPos.y + (grub.pos.y - grub.lastPos.y ) * bounceInc;
+                }
             }
-//            else{
-//                l("in  bounds")
-//            }
-            if (bbTick % 3000 === 0) {
-//                l(bbTick)
-//                l(grub)
-
-//                l(bbTick +"x")
-            }
-            bbTick++;
-        });
-
-//        ameb.isInsideAmebBoundingBox
+        }
+        );
 
         amebParticles = particleFactory.get(compConfig); // bodyParts TODO
         headParticle = amebParticles[0];
@@ -220,7 +200,8 @@ var ameb = (function () {
     }
 
     function frame(step) {
-        var top = 0 , right = 0, bottom = 0, left = 0
+        var top = 0 , right = 0, bottom = 0, left = 0;
+        // accumulate top,,, ????
         var tops = [], rights = [], bottoms = [], lefts = [];
 
         for (var i in amebParticles) {
@@ -254,10 +235,10 @@ var ameb = (function () {
             }
         }
         // calculate bounding box
-        bBox.t = Math.min(Math.min.apply(null, tops))
-        bBox.r = Math.min(Math.max.apply(null, rights))
-        bBox.b = Math.min(Math.max.apply(null, bottoms))
-        bBox.l = Math.min(Math.min.apply(null, lefts))
+        bBox.t = Math.min.apply(null, tops)
+        bBox.r = Math.max.apply(null, rights)
+        bBox.b = Math.max.apply(null, bottoms)
+        bBox.l = Math.min.apply(null, lefts)
     }
 
     function draw(ctx) {
@@ -270,17 +251,17 @@ var ameb = (function () {
         }
 
 //        boundingBox
-        ctx.beginPath();
-        ctx.lineTo(bBox.l, bBox.t);
-        ctx.lineTo(bBox.r, bBox.t);
-
-        ctx.lineTo(bBox.r, bBox.b);
-        ctx.lineTo(bBox.l, bBox.b);
-
-        ctx.lineTo(bBox.l, bBox.t);
-
-        ctx.fillStyle = "#f00";
-        ctx.stroke();
+//        ctx.beginPath();
+//        ctx.lineTo(bBox.l, bBox.t);
+//        ctx.lineTo(bBox.r, bBox.t);
+//
+//        ctx.lineTo(bBox.r, bBox.b);
+//        ctx.lineTo(bBox.l, bBox.b);
+//
+//        ctx.lineTo(bBox.l, bBox.t);
+//
+//        ctx.fillStyle = "#f00";
+//        ctx.stroke();
 
     }
 
