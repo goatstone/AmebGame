@@ -83,16 +83,20 @@ var ameb = (function () {
         evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
 //            l(grub)
             if (
-                grub.pos.y < bBox.t ||
+                !(grub.pos.y < bBox.t ||
                     grub.pos.x > bBox.r ||
                     grub.pos.x < bBox.l ||
-                    grub.pos.y > bBox.b
+                    grub.pos.y > bBox.b)
                 ) {
-//                l("out of bounds")
-            }else{
+                l("in bounds")
                 grub.color = "#f00";
-                l("in  bounds")
+                // Now check for collision!!!!
+
+
             }
+//            else{
+//                l("in  bounds")
+//            }
             if (bbTick % 3000 === 0) {
 //                l(bbTick)
 //                l(grub)

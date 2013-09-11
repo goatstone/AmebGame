@@ -44,9 +44,9 @@ var game = (function () {
     function loop() {
         frame(16);
         draw();
-        setTimeout(function () {
+//        setTimeout(function () {
             requestAnimFrame(loop);
-        }, 0); // 100 = 5M
+//        }, 0); // 100 = 5M
     }
 
     function setDOM() {
