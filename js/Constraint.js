@@ -69,8 +69,8 @@ PinConstraint.prototype.relax = function (stepCoef) {
     this.a.pos.mutableSet(this.pos);
 }
 PinConstraint.prototype.draw = function (ctx) {
-    ctx.beginPath();
-    ctx.arc(this.pos.x, this.pos.y, 16, 0, 2 * Math.PI);
-    ctx.fillStyle = "rgba(0,153,255,0.1)";
-    ctx.fill();
+//    ctx.beginPath();
+//    ctx.arc(this.pos.x, this.pos.y, 16, 0, 2 * Math.PI);
+//    ctx.fillStyle = "rgba(0,153,255,0.1)";
+//    ctx.fill();
 }

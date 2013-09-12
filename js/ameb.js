@@ -29,6 +29,8 @@ ameb = (function () {
 
     var frames = 0, tailWagInc = 2, isWagging = false;
     var tailWagDuration = 4000;
+    var eatGrubDuration = 3000;
+    var redVal = 200;
 
     function init(config) {
         width = config.width;
@@ -105,7 +107,7 @@ ameb = (function () {
         headParticle = amebParticles[0];
         footParticle = amebParticles[1];
         tailEnd = amebParticles[amebParticles.length - 1];
-        l(tailEnd)
+//        l(tailEnd)
         // DistanceConstraint
         for (var i in amebParticles) {
             if (i > 0) {
@@ -178,6 +180,12 @@ ameb = (function () {
     function eatGrub() {
         healthPoints++;
         bugsEaten++;
+
+        isEatingGrub = true;
+        headParticle.color = "#00f";
+        setTimeout(function () {
+            isEatingGrub = false;
+        }, eatGrubDuration)
     }
 
     function reset() {
@@ -216,9 +224,9 @@ ameb = (function () {
         isWagging = true;
         setTimeout(function () {
             isWagging = false;
-        }, tailWagDuration)
-
+        }, tailWagDuration);
     }
+
 
     function frame(step) {
         frames++;
@@ -228,7 +236,13 @@ ameb = (function () {
             }
             tailEnd.pos.x = tailEnd.pos.x + tailWagInc;
         }
-
+        if (isEatingGrub) {
+            redVal += 30
+            redVal = redVal % 250;
+            headParticle.color = "rgba(" + redVal + ",250," + redVal + ",1)";
+        } else { // TODO optimize
+            headParticle.color = "rgba(200, 200, 80, 1)";
+        }
         var top = 0 , right = 0, bottom = 0, left = 0;
         // accumulate top,,, ????
         var tops = [], rights = [], bottoms = [], lefts = [];
@@ -296,6 +310,8 @@ ameb = (function () {
 
     }
 
+    var isEatingGrub = false;
+
     function collidePoint(grub) {
 
         // what is the nextPos?
@@ -306,9 +322,7 @@ ameb = (function () {
             if (Collide.circlePoint(parts[i], possibleNextPos)) {
                 if (i === "0") { // if this is the head of the Ameb
                     evnt.trigger("ameb.eatGrub");
-                    var randN = rand(10, width - 10);
-                    grub.pos = new Vector2D(randN, 1); // grub.eaten
-                    grub.lastPos = new Vector2D(randN, 0);
+                    grub.eatGrub();
                     return false;
                 }
                 return true;

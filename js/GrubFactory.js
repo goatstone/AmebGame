@@ -19,7 +19,15 @@ var GrubFactory = (function () {
                 color:"rgba(55," + rand(20, 150) + ", " + rand(20, 150) + ", 0.7)",
                 size:5,
                 boundWidth:width, boundHeight:height,
-                gravity:new Vector2D(0.0, -0.003)
+                gravity:new Vector2D(0.0, -0.003),
+                eatGrub: function(){
+//                    l("eat g")
+                    var randN = rand(10, width - 10);
+
+                    this.pos = new Vector2D(randN, 1); // grub.eaten
+                    this.lastPos = new Vector2D(randN, 0);
+
+                }
             }
             bugFigConfig.push(obj);
         }
