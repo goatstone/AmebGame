@@ -32,9 +32,18 @@ var game = (function () {
         setDOM();
 
         Messages.init();
-        UserActions.init();
         grubs = GrubFactory.get({ "width":width, "height":height});
         ameb.init({ "width":width, "height":height});
+
+        UserActions.init();
+        evnt.trigger("game.setUserAction");
+//        evnt.trigger("game.removeUserAction");
+//        evnt.trigger("game.setAmebAction");
+//        evnt.trigger("game.removeAmebAction");
+
+        ActionScript.init();
+//        evnt.trigger("ActionScript.addTick");
+//        evnt.trigger("ActionScript.removeTick");
 
         evnt.on("game.reset", reset);
 
@@ -74,7 +83,7 @@ var game = (function () {
 
     function onTick() {
         lastTickTime = Date.now();
-        evnt.trigger("tick");  // game.tick    TODO
+        evnt.trigger("tick", ticks);  // game.tick    TODO
         ticks++;
     }
 
