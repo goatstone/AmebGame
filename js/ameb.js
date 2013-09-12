@@ -72,17 +72,19 @@ var ameb = (function () {
         });
 
         evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
-            var bounceInc = 2;
             if (
                 !(grub.pos.y < bBox.t || grub.pos.x > bBox.r ||
                     grub.pos.x < bBox.l || grub.pos.y > bBox.b)
                 ) {
                 // Now check for collision!!!!
-//                l(1)  ;
                 if (collidePoint(grub)) {
                     // grub.resolveHit() TODO
-                    grub.lastPos.x = grub.lastPos.x + (grub.pos.x - grub.lastPos.x ) * bounceInc;
-                    grub.lastPos.y = grub.lastPos.y + (grub.pos.y - grub.lastPos.y ) * bounceInc;
+                    var tmpX = grub.pos.x;
+                    var tmpY = grub.pos.y;
+                    grub.pos.x = grub.lastPos.x
+                    grub.pos.y = grub.lastPos.y
+                    grub.lastPos.x = tmpX;
+                    grub.lastPos.y = tmpY;
                 }
             }
         }
@@ -119,7 +121,6 @@ var ameb = (function () {
         }
         if (isAlive) {
             evnt.trigger("ameb.tick", {"healthPoints":healthPoints, "bugsEaten":bugsEaten});
-//            l(ticks)
             ticks++;
         }
     }

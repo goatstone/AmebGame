@@ -7,8 +7,10 @@ var GrubFactory = (function () {
 
     function setGrubs() {
         var bugFigConfig = [];
-        var j = 70; // TODO make num proportional to canvas size
+        var j = 170; // TODO make num proportional to canvas size
         while (--j) {
+            // all coming from outside
+            // never get made inside Ameb
             var rn = rand(0, width);
             var rn2 = rand(0, height);
             var obj = {
