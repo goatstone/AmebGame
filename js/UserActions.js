@@ -11,15 +11,14 @@ var UserActions = function () {
     function setActions() {
 
         addEventListener("keydown", function (e) {
-            l(e.which)
+//            l(e.which)
             if (e.which === 65) {     // a Automatic
-//        evnt.trigger("game.removeAmebAction");
-//        evnt.trigger("ActionScript.addTick");
+                evnt.trigger("UserActions.removeAmebAction");
+                evnt.trigger("ActionScript.addTick");
             }
             else if (e.which === 77) {     // m     Manual
-//                evnt.trigger("game.setUserAction");
-//        evnt.trigger("game.setAmebAction");
-//        evnt.trigger("ActionScript.removeTick");
+                evnt.trigger("UserActions.addAmebAction");
+                evnt.trigger("ActionScript.removeTick");
             }
             else if (e.which === 82) {     // r    Reset
                 evnt.trigger("game.reset");
@@ -30,32 +29,41 @@ var UserActions = function () {
             else if (e.which === 191) {     // ?   Description
                 evnt.trigger("Messages.toggleDescription");
             }
-            else if (e.which === 67) {     // c    Ameb.headConstraintToggle
-                evnt.trigger("ameb.headConstraintToggle");
-            }
-            else if (e.which === 32) {    // [space bar]
-                evnt.trigger("ameb.footConstraintToggle");
-            }
-            else if (e.which >= 37 && e.which <= 40) {
-                var moveKey = e.which;
-                evnt.trigger("ameb.moveHead", keyboardMoves[moveKey]);
+            if (isAmebActive) {
+                if (e.which === 67) {     // c    Ameb.headConstraintToggle
+                    evnt.trigger("ameb.headConstraintToggle");
+                }
+                else if (e.which === 32) {    // [space bar]
+                    evnt.trigger("ameb.footConstraintToggle");
+                }
+                else if (e.which >= 37 && e.which <= 40) {
+                    var moveKey = e.which;
+                    evnt.trigger("ameb.moveHead", keyboardMoves[moveKey]);
+                }
             }
         });
     }
 
-    // removeAmebActions
-    function removeActions() {
-        removeEventListener("keydown");
+    var isAmebActive = false;
+
+    function removeAmebAction() {
+        isAmebActive = false;
+    }
+
+    function addAmebAction() {
+        isAmebActive = true;
     }
 
     function init() {
         evnt = G.EvntFactory.get();
-        evnt.on("game.setUserAction", function () {
-            setActions();
-        })
-        evnt.on("game.removeUserAction", function () {
-            removeActions();
-        })
+        setActions();
+
+        evnt.on("UserActions.addAmebAction", function () {
+            addAmebAction();
+        });
+        evnt.on("UserActions.removeAmebAction", function () {
+            removeAmebAction();
+        });
     }
 
     return{

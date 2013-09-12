@@ -11,6 +11,8 @@ var Messages = function () {
             "Move Amebs' head with the arrow keys and catch bugs." ,
             "Lock and unlock Amebs' head with the 'c' key."  ,
             "Lock and unlock Amebs' foot with the 'space bar' key.",
+            "Press the 'a' key to put Ameb in Automatic mode.",
+            "Press the 'm' key to put Ameb in Manual mode.",
             "Press the \"r\" key to reset   ."
 
         ],

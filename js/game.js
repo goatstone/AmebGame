@@ -36,13 +36,11 @@ var game = (function () {
         ameb.init({ "width":width, "height":height});
 
         UserActions.init();
-        evnt.trigger("game.setUserAction");
-//        evnt.trigger("game.removeUserAction");
-//        evnt.trigger("game.setAmebAction");
-//        evnt.trigger("game.removeAmebAction");
+//        evnt.trigger("UserActions.addAmebAction");
+//        evnt.trigger("UserActions.removeAmebAction");
 
         ActionScript.init();
-//        evnt.trigger("ActionScript.addTick");
+        evnt.trigger("ActionScript.addTick");
 //        evnt.trigger("ActionScript.removeTick");
 
         evnt.on("game.reset", reset);
@@ -55,7 +53,7 @@ var game = (function () {
         draw();
         setTimeout(function () {
             requestAnimFrame(loop);
-       }, 40); // 100 = 5M
+       }, 40);
     }
 
     function setDOM() {
