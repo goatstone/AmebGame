@@ -7,11 +7,15 @@ var UserActions = function () {
         37: [-moveDist, 0], 38: [ 0, -moveDist],
         39: [moveDist, 0], 40: [0, moveDist]
     };
+    var isAmebActive = false;
 
     function setActions() {
 
         addEventListener("keydown", function (e) {
 //            l(e.which)
+            if (e.which === 87) {     // a Automatic
+                evnt.trigger("ameb.wagTail");
+            }
             if (e.which === 65) {     // a Automatic
                 evnt.trigger("UserActions.removeAmebAction");
                 evnt.trigger("ActionScript.addTick");
@@ -43,8 +47,6 @@ var UserActions = function () {
             }
         });
     }
-
-    var isAmebActive = false;
 
     function removeAmebAction() {
         isAmebActive = false;

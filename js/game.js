@@ -36,14 +36,12 @@ var game = (function () {
         ameb.init({ "width":width, "height":height});
 
         UserActions.init();
-//        evnt.trigger("UserActions.addAmebAction");
+        evnt.trigger("UserActions.addAmebAction");
 //        evnt.trigger("UserActions.removeAmebAction");
 
         ActionScript.init();
-        evnt.trigger("ActionScript.addTick");
+//        evnt.trigger("ActionScript.addTick");
 //        evnt.trigger("ActionScript.removeTick");
-
-        evnt.on("game.reset", reset);
 
         loop()
     }
@@ -75,10 +73,6 @@ var game = (function () {
         ctx = canvas.getContext("2d");
     }
 
-    function reset() {
-        evnt.trigger("game.reset")
-    }
-
     function onTick() {
         lastTickTime = Date.now();
         evnt.trigger("tick", ticks);  // game.tick    TODO
@@ -97,7 +91,7 @@ var game = (function () {
         for (var b in grubs) {
             grubs[b].frame();
             // Is the grub in the bounding box???
-           // if it is then it will check the collision with the object
+            // if it is then it will check the collision with the object
             evnt.trigger("ameb.isInsideAmebBoundingBox", grubs[b]);
         }
     }

@@ -13,6 +13,7 @@ var Messages = function () {
             "Lock and unlock Amebs' foot with the 'space bar' key.",
             "Press the 'a' key to put Ameb in Automatic mode.",
             "Press the 'm' key to put Ameb in Manual mode.",
+            "Press the 'w' key to wag Amebs' tail.",
             "Press the \"r\" key to reset   ."
 
         ],

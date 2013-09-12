@@ -1,11 +1,16 @@
 /* ameb.js */
 // AmebFactory TODO
 
-var ameb = (function () {
+var ameb;
+ameb = (function () {
 
     var headParticle = null, footParticle = null,
         headConstraint = null, footConstraint = null;
+
+    var tailEnd = null;
+
     // allParts allConstraints headPart headConstraint footPart footConstraint
+
     var amebParticles = [], amebConstraints = []; // parts constraints
     var compConfig = [];
     var maxNeckLength = 100
@@ -21,6 +26,9 @@ var ameb = (function () {
 
     var tops = [], rights = [], bottoms = [], rights = [];
     var bBox = {t:0, r:0, b:0, l:0}; // boundingBox
+
+    var frames = 0, tailWagInc = 2, isWagging = false;
+    var tailWagDuration = 4000;
 
     function init(config) {
         width = config.width;
@@ -70,30 +78,34 @@ var ameb = (function () {
         evnt.on("game.draw", function (ctx) {
             draw(ctx);
         });
+        evnt.on("ameb.wagTail", function (ctx) {
+            wagTail();
+        });
 
         evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
-            if (
-                !(grub.pos.y < bBox.t || grub.pos.x > bBox.r ||
-                    grub.pos.x < bBox.l || grub.pos.y > bBox.b)
-                ) {
-                // Now check for collision!!!!
-                if (collidePoint(grub)) {
-                    // grub.resolveHit() TODO
-                    var tmpX = grub.pos.x;
-                    var tmpY = grub.pos.y;
-                    grub.pos.x = grub.lastPos.x
-                    grub.pos.y = grub.lastPos.y
-                    grub.lastPos.x = tmpX;
-                    grub.lastPos.y = tmpY;
+                if (
+                    !(grub.pos.y < bBox.t || grub.pos.x > bBox.r ||
+                        grub.pos.x < bBox.l || grub.pos.y > bBox.b)
+                    ) {
+                    // Now check for collision!!!!
+                    if (collidePoint(grub)) {
+                        // grub.resolveHit() TODO
+                        var tmpX = grub.pos.x;
+                        var tmpY = grub.pos.y;
+                        grub.pos.x = grub.lastPos.x
+                        grub.pos.y = grub.lastPos.y
+                        grub.lastPos.x = tmpX;
+                        grub.lastPos.y = tmpY;
+                    }
                 }
             }
-        }
         );
 
         amebParticles = particleFactory.get(compConfig); // bodyParts TODO
         headParticle = amebParticles[0];
         footParticle = amebParticles[1];
-
+        tailEnd = amebParticles[amebParticles.length - 1];
+        l(tailEnd)
         // DistanceConstraint
         for (var i in amebParticles) {
             if (i > 0) {
@@ -200,7 +212,23 @@ var ameb = (function () {
         return (indexOf !== -1) ? true : false; // treturn (indexOf !== -1) TODO
     }
 
+    function wagTail() {
+        isWagging = true;
+        setTimeout(function () {
+            isWagging = false;
+        }, tailWagDuration)
+
+    }
+
     function frame(step) {
+        frames++;
+        if (isWagging) {
+            if (frames % 10 === 0) {
+                tailWagInc = tailWagInc * -1;
+            }
+            tailEnd.pos.x = tailEnd.pos.x + tailWagInc;
+        }
+
         var top = 0 , right = 0, bottom = 0, left = 0;
         // accumulate top,,, ????
         var tops = [], rights = [], bottoms = [], lefts = [];
@@ -250,7 +278,9 @@ var ameb = (function () {
         for (var i = 0; i < amebConstraints.length; ++i) {
             amebConstraints[i].draw(ctx);
         }
+    }
 
+    function drawBoundingBox() {
 //        boundingBox
 //        ctx.beginPath();
 //        ctx.lineTo(bBox.l, bBox.t);
@@ -277,8 +307,8 @@ var ameb = (function () {
                 if (i === "0") { // if this is the head of the Ameb
                     evnt.trigger("ameb.eatGrub");
                     var randN = rand(10, width - 10);
-                    grub.pos = new Vector2D(randN, 1 ); // grub.eaten
-                    grub.lastPos = new Vector2D( randN, 0);
+                    grub.pos = new Vector2D(randN, 1); // grub.eaten
+                    grub.lastPos = new Vector2D(randN, 0);
                     return false;
                 }
                 return true;
