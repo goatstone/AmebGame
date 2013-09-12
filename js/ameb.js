@@ -276,8 +276,9 @@ var ameb = (function () {
             if (Collide.circlePoint(parts[i], possibleNextPos)) {
                 if (i === "0") { // if this is the head of the Ameb
                     evnt.trigger("ameb.eatGrub");
-                    grub.pos = new Vector2D(Math.random * 30, 10); // grub.eaten
-                    grub.lastPos = new Vector2D(10, 10);
+                    var randN = rand(10, width - 10);
+                    grub.pos = new Vector2D(randN, 1 ); // grub.eaten
+                    grub.lastPos = new Vector2D( randN, 0);
                     return false;
                 }
                 return true;
