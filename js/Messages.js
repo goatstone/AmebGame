@@ -2,36 +2,48 @@
 
 var Messages = function () {
     var msgs = {
-        title:["Ameb"],
-        credit:["- Designed and Developed by Goatstone, 2013"],
-        description:[
-            "Press the '?' key to see this description at any time.",
+        title: ["AMEB"],
+        credit: ["Designed and Developed by Goatstone, 2013"],
+        description: [
             "Ameb has only a head, a foot and a tail. ",
-            "Ameb must eat bugs to stay alive!"  ,
-            "Move Amebs' head with the arrow keys and catch bugs." ,
-            "Lock and unlock Amebs' head with the 'c' key."  ,
-            "Lock and unlock Amebs' foot with the 'space bar' key.",
-            "Press the 'a' key to put Ameb in Automatic mode.",
-            "Press the 'm' key to put Ameb in Manual mode.",
-            "Press the 'w' key to wag Amebs' tail.",
-            "Press the \"r\" key to reset   ."
-
+            "Ameb must eat bugs to stay alive!"
         ],
-        labels:{"healthPoints":"Health Points: ", "bugsEaten":" | Bugs Eaten: "},
-        statusStates:{"die":"Amed is Dead!"},
-        keyboard:{c:"Lock or free the head", spaceBar:"Lock or free the Foot", arrowKeys:"move Ameb's head" }
+        insructions: [
+            "'?' key shows this description at any time.",
+            'Arrow keys Move Amebs\' head to catch bugs.',
+            '"c" key locks and unlocks Amebs\' head in place.'  ,
+            '"space bar" locks and unlocks Amebs\' foot in place.',
+            '"a" key puts Ameb in Automatic mode.',
+            '"m" key puts Ameb in Manual mode.' ,
+            '"w" key to wag Amebs\' tail.',
+            '"r" key to reset the game.'
+        ],
+
+        labels: {"healthPoints": "Health Points: ", "bugsEaten": " | Bugs Eaten: "},
+        statusStates: {"die": "Amed is Dead!"},
+        keyboard: {c: "Lock or free the head", spaceBar: "Lock or free the Foot", arrowKeys: "move Ameb's head" }
     };
-    var intro = [ msgs.title[0] + " " + msgs.credit[0] ];
+    var intro = [ msgs.title[0]  ,  msgs.credit[0] ];
+    var fullDesc = [ msgs.title[0] , msgs.credit[0] ];
+    fullDesc = fullDesc.concat(msgs.description);
+    fullDesc = fullDesc.concat(msgs.insructions);
+
     var selectedMsgs = [];
+
     var top = 30;
     var evnt = G.EvntFactory.get();
     var ticks = 0;
     var statusDOM = null;
+    var userHasResponded = false;
 
     function init() {
         statusDOM = document.getElementById("status");
         var startTime = Date.now();
         var endTime = startTime + 1000;
+
+        evnt.on("UserActions.userResponse", function () {
+            userHasResponded = true;
+        })
 
         evnt.on("tick", function () {
             onTick();
@@ -57,17 +69,17 @@ var Messages = function () {
         evnt.on("Messages.toggleDescription", function (data) {
             toggleDescription();
         })
-
-        toggleIntro();
+        evnt.on("Messages.toggleFullDescription", function (data) {
+            toggleFullDescription();
+        })
     }
 
     function onTick() {
-        if (ticks === 5) {
-            clear();
-            selectedMsgs = msgs.description;
+        if (ticks === 3 && !userHasResponded) {
+            toggleFullDescription();
         }
-        else if (ticks === 15) {
-            selectedMsgs = [];
+        if (ticks === 19) {
+            clear();
         }
         ticks++;
     }
@@ -84,6 +96,16 @@ var Messages = function () {
         }
     }
 
+    // toggleFullDescription(){}
+    function toggleFullDescription() {
+        //fullDesc
+        if (selectedMsgs !== fullDesc) {
+            selectedMsgs = fullDesc;
+        } else {
+            selectedMsgs = [];
+        }
+    }
+
     function toggleDescription() {
         if (selectedMsgs !== msgs.description) {
             selectedMsgs = msgs.description;
@@ -91,16 +113,30 @@ var Messages = function () {
             selectedMsgs = [];
         }
     }
-
+//     var startTop;
     function draw(ctx) {
-        ctx.fillStyle = "#006";
-        ctx.font = "14pt Arial";
-        top = 30;
+        var startTop = 30
+        var inc = startTop;
+        ctx.fillStyle = "#f00";
+        ctx.strokeStyle = "#f00"
+        ctx.font = "18px Arial";
+
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(210, 250, 210, .7)";
+        ctx.rect(1,startTop - 20, 450, 280);
+        ctx.fill();
+        ctx.closePath();
+
         for (var m in selectedMsgs) {
-            ctx.fillText(selectedMsgs[m], 10, top);
-            top += 25;
+            ctx.font = "18px Arial";
+            ctx.fillStyle = "#111";
+            ctx.fillText(selectedMsgs[m], 10, inc);
+            ctx.font = "18px Arial Bold";
+            ctx.fillStyle = "#00f";
+            inc += 22;
         }
-        ctx.stroke();
+
     }
 
     function hasMessages() {
@@ -108,7 +144,7 @@ var Messages = function () {
     }
 
     return{
-        init:function () {
+        init: function () {
             init();
         }
     }

@@ -12,6 +12,9 @@ var UserActions = function () {
     function setActions() {
 
         addEventListener("keydown", function (e) {
+
+            evnt.trigger("UserActions.userResponse");
+
 //            l(e.which)
             if (e.which === 87) {     // a Automatic
                 evnt.trigger("ameb.wagTail");
@@ -31,7 +34,7 @@ var UserActions = function () {
                 evnt.trigger("Messages.toggleIntro");
             }
             else if (e.which === 191) {     // ?   Description
-                evnt.trigger("Messages.toggleDescription");
+                evnt.trigger("Messages.toggleFullDescription");
             }
             if (isAmebActive) {
                 if (e.which === 67) {     // c    Ameb.headConstraintToggle

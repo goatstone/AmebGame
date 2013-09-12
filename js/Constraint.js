@@ -21,7 +21,7 @@ DistanceConstraint.prototype.relax = function (stepCoef) {
 }
 
 DistanceConstraint.prototype.setCornerPoints = function () {
-    rad = 10;
+    rad = this.b.size/2+2 ;
     var rmCos = (  this.b.pos.x - this.a.pos.x   ) /
         Math.sqrt(Math.pow(this.a.pos.x - this.b.pos.x, 2) + Math.pow(this.a.pos.y - this.b.pos.y, 2));    // cos
     var rmSin = (  this.b.pos.y - this.a.pos.y   ) /

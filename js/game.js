@@ -31,7 +31,6 @@ var game = (function () {
 
         setDOM();
 
-        Messages.init();
         grubs = GrubFactory.get({ "width":width, "height":height});
         ameb.init({ "width":width, "height":height});
 
@@ -42,6 +41,8 @@ var game = (function () {
         ActionScript.init();
 //        evnt.trigger("ActionScript.addTick");
 //        evnt.trigger("ActionScript.removeTick");
+
+        Messages.init();
 
         loop()
     }
@@ -103,11 +104,12 @@ var game = (function () {
         ctx.rect(0, 0, width, height);
         ctx.fill();
 
-        evnt.trigger("game.draw", ctx);
-
         for (var i in grubs) {
             grubs[i].draw(ctx);
         }
+
+        evnt.trigger("game.draw", ctx);
+
     }
 
 })();
