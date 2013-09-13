@@ -22,7 +22,6 @@ var GrubFactory = (function() {
                 boundWidth: width, boundHeight: height,
                 gravity: new Vector2D(0.0, -0.003),
                 eatGrub: function() {
-//                    l("eat g")
                     var randN = rand(10, width - 10);
 
                     this.pos = new Vector2D(randN, 1); // grub.eaten

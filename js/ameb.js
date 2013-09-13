@@ -61,7 +61,7 @@ ameb = (function() {
             b += colorInc;
             startColor = 'rgba(' + r + ',' + g + ',' + b + ',1.0 )';
         }
-        evnt.on('tick', function() { // .on("game.tick"
+        evnt.on('tick', function() {
             onTick();
         });
         evnt.on('ameb.headConstraintToggle', headConstraintToggle);

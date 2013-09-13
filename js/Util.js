@@ -1,6 +1,4 @@
-function l(msg) {
-    console.log(msg);
-}
+/* Util.js */
 
 function rand(low, high) {
     var num = 0;
