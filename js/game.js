@@ -8,7 +8,7 @@
  physics adapted from https://github.com/subprotocol/verlet-js
  * */
 
-var game = (function () {
+var game = (function() {
     var id = 0;
     var evnt;
     var canvas, ctx, width, height;
@@ -18,8 +18,8 @@ var game = (function () {
     var ticks = 0;
     var tickInc = 1000;
 
-    window.addEventListener("load", function load1() {
-        window.removeEventListener("load", load1, false);
+    window.addEventListener('load', function load1() {
+        window.removeEventListener('load', load1, false);
         init();
     });
 
@@ -31,11 +31,11 @@ var game = (function () {
 
         setDOM();
 
-        grubs = GrubFactory.get({ "width":width, "height":height});
-        ameb.init({ "width":width, "height":height});
+        grubs = GrubFactory.get({ 'width': width, 'height': height});
+        ameb.init({ 'width': width, 'height': height});
 
         UserActions.init();
-        evnt.trigger("UserActions.addAmebAction");
+        evnt.trigger('UserActions.addAmebAction');
 //        evnt.trigger("UserActions.removeAmebAction");
 
         ActionScript.init();
@@ -44,25 +44,25 @@ var game = (function () {
 
         Messages.init();
 
-        loop()
+        loop();
     }
 
     function loop() {
         frame(16);
         draw();
-        setTimeout(function () {
+        setTimeout(function() {
             requestAnimFrame(loop);
        }, 40);
     }
 
     function setDOM() {
-        canvas = document.getElementById("board");
-        var body = document.getElementsByTagName("body")[0];
+        canvas = document.getElementById('board');
+        var body = document.getElementsByTagName('body')[0];
         var viewportHeight = document.documentElement.clientHeight;
         var viewportWidth = document.documentElement.clientWidth;
-        canvas.style.backgroundColor = "#cff";
-        body.style.backgroundColor = "#000";
-        body.style.margin = "2px";
+        canvas.style.backgroundColor = '#cff';
+        body.style.backgroundColor = '#000';
+        body.style.margin = '2px';
 
         width = viewportWidth - 15;
         height = viewportHeight - 15;
@@ -70,13 +70,13 @@ var game = (function () {
         var dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
         canvas.height = height * dpr;
-        canvas.getContext("2d").scale(dpr, dpr);
-        ctx = canvas.getContext("2d");
+        canvas.getContext('2d').scale(dpr, dpr);
+        ctx = canvas.getContext('2d');
     }
 
     function onTick() {
         lastTickTime = Date.now();
-        evnt.trigger("tick", ticks);  // game.tick    TODO
+        evnt.trigger('tick', ticks);  // game.tick    TODO
         ticks++;
     }
 
@@ -85,7 +85,7 @@ var game = (function () {
             onTick();
         }
 
-        evnt.trigger("game.frame", step)
+        evnt.trigger('game.frame', step);
 
         // TODO collision ameb
 
@@ -93,14 +93,13 @@ var game = (function () {
             grubs[b].frame();
             // Is the grub in the bounding box???
             // if it is then it will check the collision with the object
-            evnt.trigger("ameb.isInsideAmebBoundingBox", grubs[b]);
+            evnt.trigger('ameb.isInsideAmebBoundingBox', grubs[b]);
         }
     }
 
     function draw() {
-//            ctx.clearRect(0, 0, width, height);   TODO drawEnviornment() OR env.on(draw, )
-        // optimize draw routine : TODO
-        ctx.fillStyle = "rgba(255,255,254, 0.9  )";
+//            ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(255,255,254, 0.9  )';
         ctx.rect(0, 0, width, height);
         ctx.fill();
 
@@ -108,7 +107,7 @@ var game = (function () {
             grubs[i].draw(ctx);
         }
 
-        evnt.trigger("game.draw", ctx);
+        evnt.trigger('game.draw', ctx);
 
     }
 

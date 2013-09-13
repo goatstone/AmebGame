@@ -2,7 +2,7 @@
 // AmebFactory TODO
 
 var ameb;
-ameb = (function () {
+ameb = (function() {
 
     var headParticle = null, footParticle = null,
         headConstraint = null, footConstraint = null;
@@ -13,19 +13,19 @@ ameb = (function () {
 
     var amebParticles = [], amebConstraints = []; // parts constraints
     var compConfig = [];
-    var maxNeckLength = 100
+    var maxNeckLength = 100;
     var isAlive = true;
-    var healthPoints = 15, bugsEaten = 0;
+    var healthPoints = 55, bugsEaten = 0;
 
     var incX = 0, incY = 20, amtX = 19, amtY = 20;
     var width = 300, height = 500; // worldWidth gameAreaWidth TODO
     var evnt = null;
     var ticks = 0;
     var midX = 10, midY = 10;
-    var bbTick = 0
+    var bbTick = 0;
 
     var tops = [], rights = [], bottoms = [], rights = [];
-    var bBox = {t:0, r:0, b:0, l:0}; // boundingBox
+    var bBox = {t: 0, r: 0, b: 0, l: 0}; // boundingBox
 
     var frames = 0, tailWagInc = 2, isWagging = false;
     var tailWagDuration = 4000;
@@ -41,50 +41,51 @@ ameb = (function () {
         var sizeStart = 15, sizeInc = 1;
         var r = 200, g = 200, b = 80;
         var colorInc = 10;
-        var startColor = "rgba(" + r + "," + g + "," + b + ",1.0 )";
+        var startColor = 'rgba(' + r + ',' + g + ',' + b + ',1.0 )';
         evnt = G.EvntFactory.get();
 
         var i = 9;
         while (--i) {
             var obj = {
-                pos:new Vector2D(midX, incY), lastPos:new Vector2D(midX, incY),
-                color:startColor,
-                jitter:0, size:sizeStart,
-                boundWidth:width, boundHeight:height
-            }
+                pos: new Vector2D(midX, incY),
+                lastPos: new Vector2D(midX, incY),
+                color: startColor,
+                jitter: 0, size: sizeStart,
+                boundWidth: width, boundHeight: height
+            };
             sizeStart -= sizeInc;
             compConfig.push(obj);
             incY += amtY;
 //                r += colorInc;
             g += colorInc;
             b += colorInc;
-            startColor = "rgba(" + r + "," + g + "," + b + ",1.0 )";
+            startColor = 'rgba(' + r + ',' + g + ',' + b + ',1.0 )';
         }
-        evnt.on("tick", function () { // .on("game.tick"
+        evnt.on('tick', function() { // .on("game.tick"
             onTick();
         });
-        evnt.on("ameb.headConstraintToggle", headConstraintToggle);
-        evnt.on("ameb.footConstraintToggle", footConstraintToggle);
-        evnt.on("ameb.moveHead", function (data) {
-            moveHead(data)
+        evnt.on('ameb.headConstraintToggle', headConstraintToggle);
+        evnt.on('ameb.footConstraintToggle', footConstraintToggle);
+        evnt.on('ameb.moveHead', function(data) {
+            moveHead(data);
         });
-        evnt.on("ameb.eatGrub", function () {
-            eatGrub()
+        evnt.on('ameb.eatGrub', function() {
+            eatGrub();
         });
-        evnt.on("game.reset", function () {
-            reset()
+        evnt.on('game.reset', function() {
+            reset();
         });
-        evnt.on("game.frame", function (step) {
+        evnt.on('game.frame', function(step) {
             frame(step);
         });
-        evnt.on("game.draw", function (ctx) {
+        evnt.on('game.draw', function(ctx) {
             draw(ctx);
         });
-        evnt.on("ameb.wagTail", function (ctx) {
+        evnt.on('ameb.wagTail', function(ctx) {
             wagTail();
         });
 
-        evnt.on("ameb.isInsideAmebBoundingBox", function (grub) {
+        evnt.on('ameb.isInsideAmebBoundingBox', function(grub) {
                 if (
                     !(grub.pos.y < bBox.t || grub.pos.x > bBox.r ||
                         grub.pos.x < bBox.l || grub.pos.y > bBox.b)
@@ -94,8 +95,8 @@ ameb = (function () {
                         // grub.resolveHit() TODO
                         var tmpX = grub.pos.x;
                         var tmpY = grub.pos.y;
-                        grub.pos.x = grub.lastPos.x
-                        grub.pos.y = grub.lastPos.y
+                        grub.pos.x = grub.lastPos.x;
+                        grub.pos.y = grub.lastPos.y;
                         grub.lastPos.x = tmpX;
                         grub.lastPos.y = tmpY;
                     }
@@ -111,17 +112,20 @@ ameb = (function () {
         // DistanceConstraint
         for (var i in amebParticles) {
             if (i > 0) {
-                amebConstraints.push(new DistanceConstraint(amebParticles[i], amebParticles[i - 1], 0.02, 30));
+                amebConstraints.push(
+                    new DistanceConstraint(amebParticles[i],
+                        amebParticles[i - 1], 0.02, 30));
             }
         }
         headParticle.size = 10;
-        headParticle.color = "rgba( 255, 90, 0, 0.9)";
-        footParticle.color = "rgba( 200, 200, 0, 0.9)";
+        headParticle.color = 'rgba( 255, 90, 0, 0.9)';
+        footParticle.color = 'rgba( 200, 200, 0, 0.9)';
 
         headConstraint = new PinConstraint(headParticle, headParticle.pos);
 
-        amebParticles[1].size = 20
-        footConstraint = new PinConstraint(amebParticles[1], amebParticles[1].pos);
+        amebParticles[1].size = 20;
+        footConstraint =
+            new PinConstraint(amebParticles[1], amebParticles[1].pos);
         amebConstraints.push(footConstraint);
 
     }
@@ -134,7 +138,8 @@ ameb = (function () {
             die();
         }
         if (isAlive) {
-            evnt.trigger("ameb.tick", {"healthPoints":healthPoints, "bugsEaten":bugsEaten});
+            evnt.trigger('ameb.tick',
+                {'healthPoints': healthPoints, 'bugsEaten': bugsEaten});
             ticks++;
         }
     }
@@ -146,7 +151,7 @@ ameb = (function () {
         isAlive = false;
         // change color TODO
         // set message
-        evnt.trigger("ameb.die");
+        evnt.trigger('ameb.die');
     }
 
     function headConstraintToggle() {
@@ -154,7 +159,7 @@ ameb = (function () {
             removeConstraint(headConstraint);
         } else {
             var curDist = footParticle.pos.dist(headParticle.pos);
-            maxNeckLength = ( curDist > 100 ) ? curDist : 100;
+            maxNeckLength = (curDist > 100) ? curDist : 100;
             addHeadConstraint();
         }
     }
@@ -170,8 +175,9 @@ ameb = (function () {
     }
 
     function moveHead(config) {
-        if (footParticle.pos.dist(headParticle.pos.add(new Vector2D(config[0], config[1])))
-            < maxNeckLength && isAlive) {
+        if (footParticle.pos.dist(headParticle.pos.add(
+            new Vector2D(config[0], config[1]))) <
+            maxNeckLength && isAlive) {
             headParticle.pos.mutableAdd(new Vector2D(config[0], config[1]));
             headConstraint.pos.mutableAdd(new Vector2D(config[0], config[1]));
         }
@@ -182,10 +188,10 @@ ameb = (function () {
         bugsEaten++;
 
         isEatingGrub = true;
-        headParticle.color = "#00f";
-        setTimeout(function () {
+        headParticle.color = '#00f';
+        setTimeout(function() {
             isEatingGrub = false;
-        }, eatGrubDuration)
+        }, eatGrubDuration);
     }
 
     function reset() {
@@ -193,7 +199,7 @@ ameb = (function () {
             return;
         }
         isAlive = true;
-        healthPoints = 25;
+        healthPoints = 45;
         headParticle.pos = new Vector2D(midX, midY);
         headParticle.lastPos = new Vector2D(midX, midY);
         footParticle.pos = new Vector2D(midX, midY + 5);
@@ -222,7 +228,7 @@ ameb = (function () {
 
     function wagTail() {
         isWagging = true;
-        setTimeout(function () {
+        setTimeout(function() {
             isWagging = false;
         }, tailWagDuration);
     }
@@ -237,11 +243,11 @@ ameb = (function () {
             tailEnd.pos.x = tailEnd.pos.x + tailWagInc;
         }
         if (isEatingGrub) {
-            redVal += 30
+            redVal += 30;
             redVal = redVal % 250;
-            headParticle.color = "rgba(" + redVal + ",250," + redVal + ",1)";
+            headParticle.color = 'rgba(' + redVal + ',250,' + redVal + ',1)';
         } else { // TODO optimize
-            headParticle.color = "rgba(200, 200, 80, 1)";
+            headParticle.color = 'rgba(200, 200, 80, 1)';
         }
         var top = 0 , right = 0, bottom = 0, left = 0;
         // accumulate top,,, ????
@@ -250,13 +256,13 @@ ameb = (function () {
         for (var i in amebParticles) {
             amebParticles[i].frame();
 
-            top = Math.ceil(amebParticles[i].pos.y - amebParticles[i].size)
+            top = Math.ceil(amebParticles[i].pos.y - amebParticles[i].size);
             tops.push(top);
-            bottom = Math.ceil(amebParticles[i].pos.y + amebParticles[i].size)
+            bottom = Math.ceil(amebParticles[i].pos.y + amebParticles[i].size);
             bottoms.push(bottom);
-            right = Math.ceil(amebParticles[i].pos.x + amebParticles[i].size)
+            right = Math.ceil(amebParticles[i].pos.x + amebParticles[i].size);
             rights.push(right);
-            left = Math.ceil(amebParticles[i].pos.x - amebParticles[i].size)
+            left = Math.ceil(amebParticles[i].pos.x - amebParticles[i].size);
             lefts.push(left);
 
         }
@@ -278,10 +284,10 @@ ameb = (function () {
             }
         }
         // calculate bounding box
-        bBox.t = Math.min.apply(null, tops)
-        bBox.r = Math.max.apply(null, rights)
-        bBox.b = Math.max.apply(null, bottoms)
-        bBox.l = Math.min.apply(null, lefts)
+        bBox.t = Math.min.apply(null, tops);
+        bBox.r = Math.max.apply(null, rights);
+        bBox.b = Math.max.apply(null, bottoms);
+        bBox.l = Math.min.apply(null, lefts);
     }
 
     function draw(ctx) {
@@ -320,8 +326,8 @@ ameb = (function () {
         var parts = amebParticles;
         for (var i in parts) {
             if (Collide.circlePoint(parts[i], possibleNextPos)) {
-                if (i === "0") { // if this is the head of the Ameb
-                    evnt.trigger("ameb.eatGrub");
+                if (i === '0') { // if this is the head of the Ameb
+                    evnt.trigger('ameb.eatGrub');
                     grub.eatGrub();
                     return false;
                 }
@@ -330,28 +336,29 @@ ameb = (function () {
         }
 
         var partCnstrnts = amebConstraints.slice(0, 7);
-        ;
+
         for (var j in partCnstrnts) {
-            var t = {}
-            t.p1 = partCnstrnts[j].cornerPoints["p1"];
-            t.p2 = partCnstrnts[j].cornerPoints["p3"];
-            t.p3 = partCnstrnts[j].cornerPoints["p4"];
-            var t2 = {}
-            t2.p1 = partCnstrnts[j].cornerPoints["p1"];
-            t2.p2 = partCnstrnts[j].cornerPoints["p2"];
-            t2.p3 = partCnstrnts[j].cornerPoints["p3"];
-            var isCollide = Collide.trianglePoint(t, grub.pos) || Collide.trianglePoint(t2, grub.pos)
+            var t = {};
+            t.p1 = partCnstrnts[j].cornerPoints['p1'];
+            t.p2 = partCnstrnts[j].cornerPoints['p3'];
+            t.p3 = partCnstrnts[j].cornerPoints['p4'];
+            var t2 = {};
+            t2.p1 = partCnstrnts[j].cornerPoints['p1'];
+            t2.p2 = partCnstrnts[j].cornerPoints['p2'];
+            t2.p3 = partCnstrnts[j].cornerPoints['p3'];
+            var isCollide = Collide.trianglePoint(
+                t, grub.pos) || Collide.trianglePoint(t2, grub.pos);
             if (isCollide) {
-                return true
+                return true;
             }
         }
         return false;
     }
 
     return {
-        init:function (config) {
+        init: function(config) {
             init(config);
         }
-    }
+    };
 
 })();
